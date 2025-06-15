@@ -41,7 +41,23 @@ jobs:
           --logger trx \
           --results-directory TestResults/Unit
     
-    # Step 6: Run Integration Tests
+    # Step 6: Start Web API for Integration Tests
+    - name: Start Web API
+      run: |
+        dotnet run --project CardValidation.Web/CardValidation.Web.csproj --configuration Release --no-build &
+        echo "Web API started in background"
+        sleep 10  # Wait for API to start up
+      env:
+        ASPNETCORE_ENVIRONMENT: Testing
+        ASPNETCORE_URLS: https://localhost:7135
+    
+    # Step 7: Wait for API to be ready
+    - name: Wait for API to be ready
+      run: |
+        timeout 30 bash -c 'until curl -k -s https://localhost:7135/health || curl -k -s https://localhost:7135; do sleep 2; done'
+        echo "API is ready"
+    
+    # Step 8: Run Integration Tests
     - name: Run Integration Tests
       run: |
         dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
@@ -51,7 +67,7 @@ jobs:
           --logger trx \
           --results-directory TestResults/Integration
     
-    # Step 7: Upload test results (so you can download them if needed)
+    # Step 9: Upload test results (so you can download them if needed)
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
