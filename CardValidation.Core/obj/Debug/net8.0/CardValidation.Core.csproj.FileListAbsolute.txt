@@ -37,3 +37,16 @@
 /Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/obj/Debug/net8.0/refint/CardValidation.Core.dll
 /Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.pdb
 /Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/obj/Debug/net8.0/ref/CardValidation.Core.dll
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/bin/Debug/net8.0/CardValidation.Core.deps.json
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/bin/Debug/net8.0/CardValidation.Core.dll
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/bin/Debug/net8.0/CardValidation.Core.pdb
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.csproj.AssemblyReference.cache
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.AssemblyInfoInputs.cache
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.AssemblyInfo.cs
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.csproj.CoreCompileInputs.cache
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.sourcelink.json
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.dll
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/refint/CardValidation.Core.dll
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/CardValidation.Core.pdb
+/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/Debug/net8.0/ref/CardValidation.Core.dll

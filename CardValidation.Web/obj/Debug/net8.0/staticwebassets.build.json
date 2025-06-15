@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "s53+aWuHoOZO4faXYixMePyKC89vMWjhPadq5qBWPOY=",
+  "Source": "CardValidation.Web",
+  "BasePath": "_content/CardValidation.Web",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
