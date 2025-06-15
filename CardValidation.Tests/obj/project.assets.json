@@ -4516,11 +4516,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj",
+      "projectUniqueName": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/CardValidation.Tests.csproj",
       "projectName": "CardValidation.Tests",
-      "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj",
+      "projectPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/CardValidation.Tests.csproj",
       "packagesPath": "/Users/najiyanasrin/.nuget/packages/",
-      "outputPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/obj/",
+      "outputPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/najiyanasrin/.nuget/NuGet/NuGet.Config"
@@ -4535,11 +4535,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj": {
-              "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj"
+            "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/CardValidation.Core.csproj": {
+              "projectPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/CardValidation.Core.csproj"
             },
-            "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj": {
-              "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj"
+            "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Web/CardValidation.Web.csproj": {
+              "projectPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Web/CardValidation.Web.csproj"
             }
           }
         }
