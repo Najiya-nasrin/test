@@ -1,0 +1,86 @@
+# Test Results and Reports
+TestResults/
+**/TestResults/
+
+# Coverage Reports
+coverage/
+**/coverage/
+coverage.*.xml
+coverage.cobertura.xml
+coverage.opencover.xml
+**/coverage.*.xml
+
+# Test Result Files
+*.trx
+*.coverage
+*.coveragexml
+TestResult.xml
+test-results.xml
+
+# Allure Reports
+allure-results/
+allure-report/
+**/allure-results/
+**/allure-report/
+
+# ReportGenerator Coverage Reports
+CoverageReport/
+**/CoverageReport/
+
+# Visual Studio Code Coverage
+*.vscode/
+.vscode/settings.json
+
+# JetBrains Rider
+.idea/
+
+# SonarQube
+.sonarqube/
+.sonar/
+
+# NCrunch
+*.ncrunch*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Web workbench (sass)
+.sass-cache/
+
+# Build output directories
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+
+# .NET build output - global patterns
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
+
+# Specific project build directories
+CardValidation.Web/bin/
+CardValidation.Web/obj/
+CardValidation.Tests/bin/
+CardValidation.Tests/obj/
+
+# Test Explorer cache
+*.VisualState.xml
+
+# OpenCover UI analysis results
+OpenCover/
+
+# Azure Stream Analytics local run output
+ASALocalRun/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
