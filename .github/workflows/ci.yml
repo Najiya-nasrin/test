@@ -74,10 +74,30 @@ jobs:
           echo "Found allure-results directory:"
           ls -la allure-results/
           
-          # Generate the allure report from the test project directory
-          allure generate allure-results --clean -o allure-report
-          echo "Allure report generated successfully in CardValidation.Tests/allure-report"
-          ls -la allure-report/
+          echo "Checking if allure-results contains actual test data:"
+          file_count=$(find allure-results -name "*.json" | wc -l)
+          echo "Found $file_count JSON files in allure-results"
+          
+          if [ $file_count -gt 0 ]; then
+            echo "Sample files in allure-results:"
+            find allure-results -name "*.json" | head -3 | xargs ls -la
+            
+            # Generate the allure report with single-file option for better portability
+            echo "Generating Allure report..."
+            allure generate allure-results --clean -o allure-report --single-file
+            
+            echo "Allure report generated successfully in CardValidation.Tests/allure-report"
+            ls -la allure-report/
+            
+            # Also create a traditional report as backup
+            echo "Creating traditional multi-file report as backup..."
+            allure generate allure-results --clean -o allure-report-traditional
+            
+          else
+            echo "No JSON files found in allure-results - tests may not have generated Allure data"
+            echo "Contents of allure-results:"
+            ls -la allure-results/
+          fi
           
         else
           echo "No allure-results found in CardValidation.Tests directory"
@@ -87,12 +107,19 @@ jobs:
           # Check if there are any JSON files that might be allure results
           echo "Looking for potential Allure result files:"
           find . -name "*.json" | head -10
-          
-          # Create empty report if no results found
-          echo "Creating empty allure report for debugging..."
-          mkdir -p allure-results
-          echo '{"name": "No Allure results found in CardValidation.Tests", "status": "broken", "stage": "finished"}' > allure-results/empty-test-result.json
-          allure generate allure-results --clean -o allure-report
+        fi
+        
+        # Always create a debug report regardless
+        echo "Creating debug information file..."
+        mkdir -p allure-debug
+        echo "Test execution completed at $(date)" > allure-debug/debug-info.txt
+        echo "Directory listing:" >> allure-debug/debug-info.txt
+        ls -la >> allure-debug/debug-info.txt
+        echo "Allure-results contents:" >> allure-debug/debug-info.txt
+        if [ -d "allure-results" ]; then
+          ls -la allure-results/ >> allure-debug/debug-info.txt
+        else
+          echo "No allure-results directory found" >> allure-debug/debug-info.txt
         fi
     
     # Step 8: Upload test results and Allure report
@@ -105,6 +132,8 @@ jobs:
           TestResults/
           CardValidation.Tests/allure-results/
           CardValidation.Tests/allure-report/
+          CardValidation.Tests/allure-report-traditional/
+          CardValidation.Tests/allure-debug/
           CardValidation.Tests/allureConfig.json
     
     # Step 9: Upload code coverage (optional)
