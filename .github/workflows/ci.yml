@@ -44,18 +44,30 @@ jobs:
     # Step 6: Start Web API for Integration Tests
     - name: Start Web API
       run: |
+        # Start API in background
         dotnet run --project CardValidation.Web/CardValidation.Web.csproj --configuration Release --no-build &
-        echo "Web API started in background"
-        sleep 10  # Wait for API to start up
+        API_PID=$!
+        echo "API_PID=$API_PID" >> $GITHUB_ENV
+        echo "Web API started with PID: $API_PID"
+        sleep 15  # Wait for API to start
       env:
         ASPNETCORE_ENVIRONMENT: Testing
-        ASPNETCORE_URLS: https://localhost:7135
+        ASPNETCORE_URLS: http://localhost:7135
     
     # Step 7: Wait for API to be ready
     - name: Wait for API to be ready
       run: |
-        timeout 30 bash -c 'until curl -k -s https://localhost:7135/health || curl -k -s https://localhost:7135; do sleep 2; done'
-        echo "API is ready"
+        echo "Waiting for API to be ready..."
+        for i in {1..30}; do
+          if curl -s http://localhost:7135 > /dev/null 2>&1; then
+            echo "API is ready!"
+            break
+          fi
+          echo "Attempt $i: API not ready yet, waiting..."
+          sleep 2
+        done
+        # Test the actual endpoint
+        curl -s http://localhost:7135/CardValidation/card/credit/validate || echo "Validation endpoint check completed"
     
     # Step 8: Run Integration Tests
     - name: Run Integration Tests
@@ -66,6 +78,16 @@ jobs:
           --verbosity normal \
           --logger trx \
           --results-directory TestResults/Integration
+      env:
+        API_BASE_URL: http://localhost:7135
+    
+    # Step 9: Stop API
+    - name: Stop Web API
+      if: always()
+      run: |
+        if [ ! -z "$API_PID" ]; then
+          kill $API_PID 2>/dev/null || echo "API process already stopped"
+        fi
     
     # Step 9: Upload test results (so you can download them if needed)
     - name: Upload test results
