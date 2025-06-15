@@ -25,11 +25,11 @@ jobs:
     
     # Step 3: Restore NuGet packages
     - name: Restore dependencies
-      run: dotnet restore cardvalidation.sln
+      run: dotnet restore CardValidation.sln
     
     # Step 4: Build the solution
     - name: Build solution
-      run: dotnet build cardvalidation.sln --configuration Release --no-restore
+      run: dotnet build CardValidation.sln --configuration Release --no-restore
     
     # Step 5: Run Unit Tests
     - name: Run Unit Tests
