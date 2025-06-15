@@ -1,0 +1,245 @@
+{
+  "uuid": "df14ab23-5abf-4e94-a167-9bbb7c975d46",
+  "historyId": "a1efe2fcb2ab75295a231940420df178",
+  "testCaseId": "2ca241ab4f0245bbba78c5cc3af89cf7",
+  "fullName": "CardValidation.Tests/IntegrationTests/Features/Credit Card Validation API/Validate Credit Card",
+  "labels": [
+    {
+      "name": "host",
+      "value": "Najiyas-MacBook-Air-2"
+    },
+    {
+      "name": "thread",
+      "value": "NUnit.Fw.NonParallelWorker"
+    },
+    {
+      "name": "language",
+      "value": "C#"
+    },
+    {
+      "name": "framework",
+      "value": "Reqnroll"
+    },
+    {
+      "name": "package",
+      "value": "IntegrationTests.Features.Credit Card Validation API"
+    },
+    {
+      "name": "feature",
+      "value": "Credit Card Validation API"
+    },
+    {
+      "name": "owner",
+      "value": "Faheem"
+    }
+  ],
+  "links": [],
+  "name": "Validate Credit Card",
+  "status": "passed",
+  "stage": "finished",
+  "steps": [
+    {
+      "name": "Given this is test case \"Valid American Express\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750014766860,
+      "stop": 1750014766891
+    },
+    {
+      "name": "Given I prepare a credit card with:",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Prepare credit card with provided data",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "table",
+              "value": "{\"Header\":[\"Owner\",\"Number\",\"Cvv\",\"IssueDate\"],\"Rows\":[{\"Owner\":\"Bob Johnson\",\"Number\":\"378282246310005\",\"Cvv\":\"1234\",\"IssueDate\":\"06/28\"}],\"RowCount\":1}",
+              "excluded": false
+            }
+          ],
+          "start": 1750014766892,
+          "stop": 1750014766892
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Data Table",
+          "source": "201393fe-969e-4f07-80ea-07eacef5a3f7-attachment.csv",
+          "type": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "start": 1750014766891,
+      "stop": 1750014766892
+    },
+    {
+      "name": "When I send the card to the validation API",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Send credit card data to API",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [],
+          "start": 1750014766892,
+          "stop": 1750014766894
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750014766892,
+      "stop": 1750014766894
+    },
+    {
+      "name": "Then the response status should be 200",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate HTTP response status",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedStatus",
+              "value": "200",
+              "excluded": false
+            }
+          ],
+          "start": 1750014766895,
+          "stop": 1750014766895
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750014766894,
+      "stop": 1750014766895
+    },
+    {
+      "name": "Then the response body should contain \"30\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate response body content",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedResult",
+              "value": "\"30\"",
+              "excluded": false
+            }
+          ],
+          "start": 1750014766896,
+          "stop": 1750014766896
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750014766895,
+      "stop": 1750014766896
+    }
+  ],
+  "attachments": [],
+  "parameters": [
+    {
+      "name": "TestCaseName",
+      "value": "\"Valid American Express\"",
+      "excluded": false
+    },
+    {
+      "name": "Owner",
+      "value": "\"Bob Johnson\"",
+      "excluded": false
+    },
+    {
+      "name": "Number",
+      "value": "\"378282246310005\"",
+      "excluded": false
+    },
+    {
+      "name": "Cvv",
+      "value": "\"1234\"",
+      "excluded": false
+    },
+    {
+      "name": "IssueDate",
+      "value": "\"06/28\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedStatus",
+      "value": "\"200\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedResult",
+      "value": "\"30\"",
+      "excluded": false
+    }
+  ],
+  "start": 1750014766860,
+  "stop": 1750014766896
+}

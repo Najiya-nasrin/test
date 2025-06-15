@@ -219,9 +219,9 @@ var assemblies = [
     "name": "CardValidation.Web",
     "classes": [
       { "name": "CardValidation.Controllers.CardValidationController", "rp": "CardValidation.Web_CardValidationController.html", "cl": 11, "ucl": 0, "cal": 11, "tl": 32, "cb": 3, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "CardValidation.Infrustructure.CreditCardValidationFilter", "rp": "CardValidation.Web_CreditCardValidationFilter.html", "cl": 0, "ucl": 35, "cal": 35, "tl": 64, "cb": 0, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "CardValidation.ViewModels.CreditCard", "rp": "CardValidation.Web_CreditCard.html", "cl": 1, "ucl": 3, "cal": 4, "tl": 12, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Program", "rp": "CardValidation.Web_Program.html", "cl": 0, "ucl": 22, "cal": 22, "tl": 40, "cb": 0, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "CardValidation.Infrustructure.CreditCardValidationFilter", "rp": "CardValidation.Web_CreditCardValidationFilter.html", "cl": 35, "ucl": 0, "cal": 35, "tl": 64, "cb": 13, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "CardValidation.ViewModels.CreditCard", "rp": "CardValidation.Web_CreditCard.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 12, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Program", "rp": "CardValidation.Web_Program.html", "cl": 22, "ucl": 0, "cal": 22, "tl": 40, "cb": 3, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];
 
@@ -230,23 +230,9 @@ var metrics = [{ "name": "Crap Score", "abbreviation": "crp", "explanationUrl": 
 var historicCoverageExecutionTimes = [];
 
 var riskHotspotMetrics = [
-      { "name": "Crap Score", "explanationUrl": "https://googletesting.blogspot.de/2011/02/this-code-is-crap.html" },
-      { "name": "Cyclomatic complexity", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" },
 ];
 
 var riskHotspots = [
-  {
-    "assembly": "CardValidation.Web", "class": "CardValidation.Infrustructure.CreditCardValidationFilter", "reportPath": "CardValidation.Web_CreditCardValidationFilter.html", "methodName": "OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)", "methodShortName": "OnActionExecuting(...)", "fileIndex": 0, "line": 24,
-    "metrics": [
-      { "value": 72, "exceeded": true },
-      { "value": 8, "exceeded": false },
-    ]},
-  {
-    "assembly": "CardValidation.Web", "class": "CardValidation.Infrustructure.CreditCardValidationFilter", "reportPath": "CardValidation.Web_CreditCardValidationFilter.html", "methodName": "ValidateParameter(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext,System.String,System.String,System.Func`2<System.String,System.Boolean>)", "methodShortName": "ValidateParameter(...)", "fileIndex": 0, "line": 53,
-    "metrics": [
-      { "value": 42, "exceeded": true },
-      { "value": 6, "exceeded": false },
-    ]},
 ];
 
 var branchCoverageAvailable = true;

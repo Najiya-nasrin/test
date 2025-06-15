@@ -1,0 +1,245 @@
+{
+  "uuid": "67581175-fceb-4e4a-840b-8970e1e291fc",
+  "historyId": "6a3fd8a43c332658be02930ecfed0663",
+  "testCaseId": "2ca241ab4f0245bbba78c5cc3af89cf7",
+  "fullName": "CardValidation.Tests/IntegrationTests/Features/Credit Card Validation API/Validate Credit Card",
+  "labels": [
+    {
+      "name": "host",
+      "value": "Najiyas-MacBook-Air-2"
+    },
+    {
+      "name": "thread",
+      "value": "NUnit.Fw.NonParallelWorker"
+    },
+    {
+      "name": "language",
+      "value": "C#"
+    },
+    {
+      "name": "framework",
+      "value": "Reqnroll"
+    },
+    {
+      "name": "package",
+      "value": "IntegrationTests.Features.Credit Card Validation API"
+    },
+    {
+      "name": "feature",
+      "value": "Credit Card Validation API"
+    },
+    {
+      "name": "owner",
+      "value": "Faheem"
+    }
+  ],
+  "links": [],
+  "name": "Validate Credit Card",
+  "status": "passed",
+  "stage": "finished",
+  "steps": [
+    {
+      "name": "Given this is test case \"Expired Card Past Date\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750015483634,
+      "stop": 1750015483670
+    },
+    {
+      "name": "Given I prepare a credit card with:",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Prepare credit card with provided data",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "table",
+              "value": "{\"Header\":[\"Owner\",\"Number\",\"Cvv\",\"IssueDate\"],\"Rows\":[{\"Owner\":\"Expired User\",\"Number\":\"4111111111111111\",\"Cvv\":\"123\",\"IssueDate\":\"01/21\"}],\"RowCount\":1}",
+              "excluded": false
+            }
+          ],
+          "start": 1750015483671,
+          "stop": 1750015483671
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Data Table",
+          "source": "41b2ebfa-e689-4daf-99fb-d1314aaf26f0-attachment.csv",
+          "type": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "start": 1750015483670,
+      "stop": 1750015483671
+    },
+    {
+      "name": "When I send the card to the validation API",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Send credit card data to API",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [],
+          "start": 1750015483674,
+          "stop": 1750015483677
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750015483671,
+      "stop": 1750015483677
+    },
+    {
+      "name": "Then the response status should be 400",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate HTTP response status",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedStatus",
+              "value": "400",
+              "excluded": false
+            }
+          ],
+          "start": 1750015483678,
+          "stop": 1750015483678
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750015483677,
+      "stop": 1750015483678
+    },
+    {
+      "name": "Then the response body should contain \"date\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate response body content",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedResult",
+              "value": "\"date\"",
+              "excluded": false
+            }
+          ],
+          "start": 1750015483678,
+          "stop": 1750015483678
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750015483678,
+      "stop": 1750015483678
+    }
+  ],
+  "attachments": [],
+  "parameters": [
+    {
+      "name": "TestCaseName",
+      "value": "\"Expired Card Past Date\"",
+      "excluded": false
+    },
+    {
+      "name": "Owner",
+      "value": "\"Expired User\"",
+      "excluded": false
+    },
+    {
+      "name": "Number",
+      "value": "\"4111111111111111\"",
+      "excluded": false
+    },
+    {
+      "name": "Cvv",
+      "value": "\"123\"",
+      "excluded": false
+    },
+    {
+      "name": "IssueDate",
+      "value": "\"01/21\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedStatus",
+      "value": "\"400\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedResult",
+      "value": "\"date\"",
+      "excluded": false
+    }
+  ],
+  "start": 1750015483634,
+  "stop": 1750015483678
+}
