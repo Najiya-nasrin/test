@@ -1,0 +1,245 @@
+{
+  "uuid": "d83a5933-5931-499c-b391-063038843fb5",
+  "historyId": "f73eb37d5fea0a4d5f32e607bdd1077b",
+  "testCaseId": "f23b62759e57ee8ca62f7bfb89efc203",
+  "fullName": "CardValidation.Tests/Features/Credit Card Validation API/Validate Credit Card",
+  "labels": [
+    {
+      "name": "host",
+      "value": "Najiyas-MacBook-Air-2"
+    },
+    {
+      "name": "thread",
+      "value": "NUnit.Fw.NonParallelWorker"
+    },
+    {
+      "name": "language",
+      "value": "C#"
+    },
+    {
+      "name": "framework",
+      "value": "Reqnroll"
+    },
+    {
+      "name": "package",
+      "value": "Features.Credit Card Validation API"
+    },
+    {
+      "name": "feature",
+      "value": "Credit Card Validation API"
+    },
+    {
+      "name": "owner",
+      "value": "Faheem"
+    }
+  ],
+  "links": [],
+  "name": "Validate Credit Card",
+  "status": "passed",
+  "stage": "finished",
+  "steps": [
+    {
+      "name": "Given this is test case \"Owner Contains Card Number\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749921490004,
+      "stop": 1749921490005
+    },
+    {
+      "name": "Given I prepare a credit card with:",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Prepare credit card with provided data",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "table",
+              "value": "{\"Header\":[\"Owner\",\"Number\",\"Cvv\",\"IssueDate\"],\"Rows\":[{\"Owner\":\"John 4111111\",\"Number\":\"4111111111111111\",\"Cvv\":\"123\",\"IssueDate\":\"12/30\"}],\"RowCount\":1}",
+              "excluded": false
+            }
+          ],
+          "start": 1749921490006,
+          "stop": 1749921490006
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Data Table",
+          "source": "52b2da7b-5d11-4041-9168-c6ad6cec59b1-attachment.csv",
+          "type": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "start": 1749921490005,
+      "stop": 1749921490006
+    },
+    {
+      "name": "When I send the card to the validation API",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Send credit card data to API",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [],
+          "start": 1749921490007,
+          "stop": 1749921490030
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749921490006,
+      "stop": 1749921490030
+    },
+    {
+      "name": "Then the response status should be 400",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate HTTP response status",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedStatus",
+              "value": "400",
+              "excluded": false
+            }
+          ],
+          "start": 1749921490031,
+          "stop": 1749921490031
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749921490030,
+      "stop": 1749921490031
+    },
+    {
+      "name": "Then the response body should contain \"Owner\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate response body content",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedResult",
+              "value": "\"Owner\"",
+              "excluded": false
+            }
+          ],
+          "start": 1749921490032,
+          "stop": 1749921490032
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749921490031,
+      "stop": 1749921490032
+    }
+  ],
+  "attachments": [],
+  "parameters": [
+    {
+      "name": "TestCaseName",
+      "value": "\"Owner Contains Card Number\"",
+      "excluded": false
+    },
+    {
+      "name": "Owner",
+      "value": "\"John 4111111\"",
+      "excluded": false
+    },
+    {
+      "name": "Number",
+      "value": "\"4111111111111111\"",
+      "excluded": false
+    },
+    {
+      "name": "Cvv",
+      "value": "\"123\"",
+      "excluded": false
+    },
+    {
+      "name": "IssueDate",
+      "value": "\"12/30\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedStatus",
+      "value": "\"400\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedResult",
+      "value": "\"Owner\"",
+      "excluded": false
+    }
+  ],
+  "start": 1749921490004,
+  "stop": 1749921490032
+}

@@ -1,0 +1,29 @@
+{
+  "allure": {
+    "directory": "../../../allure-results"
+  },
+  "specflow": {
+    "stepArguments": {
+      "convertToParameters": true,
+      "paramNameRegex": "",
+      "paramValueRegex": ""
+    },
+    "grouping": {
+      "suites": {
+        "parentSuite": "parentSuite",
+        "suite": "suite",
+        "subSuite": "subSuite"
+      },
+      "behaviors": {
+        "epic": "epic",
+        "feature": "feature",
+        "story": "story"
+      },
+      "packages": {
+        "package": "package",
+        "testClass": "testClass",
+        "testMethod": "testMethod"
+      }
+    }
+  }
+}

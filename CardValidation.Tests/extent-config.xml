@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <!-- Report theme -STANDARD, DARK -->
+        <theme>DARK</theme>
+        
+        <!-- Document title -->
+        <documentTitle>Card Validation API Test Report</documentTitle>
+        
+        <!-- Report or build name -->
+        <reportName>Automated Test Results</reportName>
+        
+        <!-- Location of charts in the test view -TOP, BOTTOM -->
+        <testViewChartLocation>BOTTOM</testViewChartLocation>
+        
+        <!-- Protocol for script and stylesheets -HTTPS, HTTP -->
+        <protocol>HTTPS</protocol>
+        
+        <!-- Title of the document -->
+        <reportHeadline>Card Validation Test Automation Report</reportHeadline>
+        
+        <!-- Encoding type -->
+        <encoding>UTF-8</encoding>
+        
+        <!-- Add custom CSS -->
+        <css>
+            .test-content { font-family: 'Segoe UI', Arial, sans-serif; }
+            .step-details { background-color: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0; }
+        </css>
+        
+        <!-- Add custom JavaScript -->
+        <js>
+            <!-- Custom JavaScript can be added here -->
+        </js>
+    </configuration>
+</extentreports>

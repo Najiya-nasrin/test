@@ -1,0 +1,245 @@
+{
+  "uuid": "4a367079-6c7b-409e-aea9-71e857983a7a",
+  "historyId": "a050c60b720a570c6a003df18028108c",
+  "testCaseId": "f23b62759e57ee8ca62f7bfb89efc203",
+  "fullName": "CardValidation.Tests/Features/Credit Card Validation API/Validate Credit Card",
+  "labels": [
+    {
+      "name": "host",
+      "value": "Najiyas-MacBook-Air-2"
+    },
+    {
+      "name": "thread",
+      "value": "NUnit.Fw.NonParallelWorker"
+    },
+    {
+      "name": "language",
+      "value": "C#"
+    },
+    {
+      "name": "framework",
+      "value": "Reqnroll"
+    },
+    {
+      "name": "package",
+      "value": "Features.Credit Card Validation API"
+    },
+    {
+      "name": "feature",
+      "value": "Credit Card Validation API"
+    },
+    {
+      "name": "owner",
+      "value": "Faheem"
+    }
+  ],
+  "links": [],
+  "name": "Validate Credit Card",
+  "status": "passed",
+  "stage": "finished",
+  "steps": [
+    {
+      "name": "Given this is test case \"Invalid CVV length Visa\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749972558422,
+      "stop": 1749972558423
+    },
+    {
+      "name": "Given I prepare a credit card with:",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Prepare credit card with provided data",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "table",
+              "value": "{\"Header\":[\"Owner\",\"Number\",\"Cvv\",\"IssueDate\"],\"Rows\":[{\"Owner\":\"Clara Wells\",\"Number\":\"4111111111111111\",\"Cvv\":\"12\",\"IssueDate\":\"12/30\"}],\"RowCount\":1}",
+              "excluded": false
+            }
+          ],
+          "start": 1749972558424,
+          "stop": 1749972558424
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Data Table",
+          "source": "a4ba5593-6ee2-406e-a415-a2d10cbb467b-attachment.csv",
+          "type": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "start": 1749972558423,
+      "stop": 1749972558424
+    },
+    {
+      "name": "When I send the card to the validation API",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Send credit card data to API",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [],
+          "start": 1749972558425,
+          "stop": 1749972558448
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749972558424,
+      "stop": 1749972558448
+    },
+    {
+      "name": "Then the response status should be 400",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate HTTP response status",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedStatus",
+              "value": "400",
+              "excluded": false
+            }
+          ],
+          "start": 1749972558449,
+          "stop": 1749972558449
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749972558448,
+      "stop": 1749972558449
+    },
+    {
+      "name": "Then the response body should contain \"Cvv\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate response body content",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedResult",
+              "value": "\"Cvv\"",
+              "excluded": false
+            }
+          ],
+          "start": 1749972558450,
+          "stop": 1749972558450
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1749972558449,
+      "stop": 1749972558450
+    }
+  ],
+  "attachments": [],
+  "parameters": [
+    {
+      "name": "TestCaseName",
+      "value": "\"Invalid CVV length Visa\"",
+      "excluded": false
+    },
+    {
+      "name": "Owner",
+      "value": "\"Clara Wells\"",
+      "excluded": false
+    },
+    {
+      "name": "Number",
+      "value": "\"4111111111111111\"",
+      "excluded": false
+    },
+    {
+      "name": "Cvv",
+      "value": "\"12\"",
+      "excluded": false
+    },
+    {
+      "name": "IssueDate",
+      "value": "\"12/30\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedStatus",
+      "value": "\"400\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedResult",
+      "value": "\"Cvv\"",
+      "excluded": false
+    }
+  ],
+  "start": 1749972558422,
+  "stop": 1749972558450
+}

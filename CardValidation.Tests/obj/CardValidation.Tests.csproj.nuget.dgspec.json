@@ -1,0 +1,264 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj": {}
+  },
+  "projects": {
+    "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj",
+        "projectName": "CardValidation.Core",
+        "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj",
+        "packagesPath": "/Users/najiyanasrin/.nuget/packages/",
+        "outputPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/najiyanasrin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.411/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj",
+        "projectName": "CardValidation.Tests",
+        "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/CardValidation.Tests.csproj",
+        "packagesPath": "/Users/najiyanasrin/.nuget/packages/",
+        "outputPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Tests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/najiyanasrin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj": {
+                "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj"
+              },
+              "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj": {
+                "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Allure.NUnit": {
+              "target": "Package",
+              "version": "[2.12.1, )"
+            },
+            "Allure.Net.Commons": {
+              "target": "Package",
+              "version": "[2.12.1, )"
+            },
+            "Allure.Reqnroll": {
+              "target": "Package",
+              "version": "[2.12.1, )"
+            },
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[8.3.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.14.1, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.18.4, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[4.3.2, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Reqnroll.NUnit": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[112.1.0, )"
+            },
+            "System.Net.Http.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.4, )"
+            },
+            "reqnroll": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.411/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj",
+        "projectName": "CardValidation.Web",
+        "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/CardValidation.Web.csproj",
+        "packagesPath": "/Users/najiyanasrin/.nuget/packages/",
+        "outputPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Web/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/najiyanasrin/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj": {
+                "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.2.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.411/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

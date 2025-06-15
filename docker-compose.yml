@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  cardvalidation-tests:
+    build:
+      context: .
+      dockerfile: CardValidation.Tests/Dockerfile
+    environment:
+      # Use HTTP since your API runs on HTTP according to launchSettings.json
+      - API_BASE_URL=http://localhost:7135
+    volumes:
+      # Optional: mount results directory to see test output
+      - ./test-results:/app/TestResults
+    network_mode: "host"

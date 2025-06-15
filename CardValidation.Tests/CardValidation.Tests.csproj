@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Project Configuration -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateAllureReport>true</GenerateAllureReport>
+  </PropertyGroup>
+
+  <!-- Test Framework Dependencies -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Testing and Assertion Libraries -->
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.3.0" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+  </ItemGroup>
+
+  <!-- BDD Testing (Reqnroll/SpecFlow) -->
+  <ItemGroup>
+    <PackageReference Include="reqnroll" Version="2.4.1" />
+    <PackageReference Include="Reqnroll.NUnit" Version="2.4.1" />
+  </ItemGroup>
+
+  <!-- API Testing -->
+  <ItemGroup>
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Reporting (Allure) -->
+  <ItemGroup>
+    <PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
+    <PackageReference Include="Allure.NUnit" Version="2.12.1" />
+    <PackageReference Include="Allure.Reqnroll" Version="2.12.1" />
+  </ItemGroup>
+
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\CardValidation.Web\CardValidation.Web.csproj" />
+    <ProjectReference Include="..\CardValidation.Core\CardValidation.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Configuration Files -->
+  <ItemGroup>
+    <None Update="allureConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="reqnroll.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

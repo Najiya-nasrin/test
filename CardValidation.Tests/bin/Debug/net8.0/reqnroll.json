@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schemas.reqnroll.net/reqnroll-config-latest.json",
+  "plugins": [
+    {
+      "name": "Allure.Reqnroll"
+    }
+  ],
+  "bindingCulture": {
+    "name": "en"
+  },
+  "trace": {
+    "traceSuccessfulSteps": true,
+    "traceTimings": true,
+    "minTracedDuration": "0:0:0.1"
+  }
+}
