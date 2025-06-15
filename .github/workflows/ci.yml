@@ -1,0 +1,89 @@
+name: CI Pipeline
+
+# When to run this pipeline
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Run tests
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Get your code
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Step 2: Install .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'  # Change to your .NET version
+    
+    # Step 3: Restore NuGet packages
+    - name: Restore dependencies
+      run: dotnet restore cardvalidation.sln
+    
+    # Step 4: Build the solution
+    - name: Build solution
+      run: dotnet build cardvalidation.sln --configuration Release --no-restore
+    
+    # Step 5: Run Unit Tests
+    - name: Run Unit Tests
+      run: |
+        dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
+          --configuration Release \
+          --no-build \
+          --verbosity normal \
+          --logger trx \
+          --results-directory TestResults/Unit
+    
+    # Step 6: Run Integration Tests
+    - name: Run Integration Tests
+      run: |
+        dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
+          --configuration Release \
+          --no-build \
+          --verbosity normal \
+          --logger trx \
+          --results-directory TestResults/Integration
+    
+    # Step 7: Upload test results (so you can download them if needed)
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()  # Upload even if tests fail
+      with:
+        name: test-results
+        path: TestResults/
+
+  # Job 2: Build and push Docker image (only runs if tests pass)
+  docker-build:
+    needs: test  # This job waits for 'test' job to complete successfully
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Get your code
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Step 2: Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    # Step 3: Build Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t najiya123/cardvalidation-app:latest .
+        docker build -t najiya123/cardvalidation-app:${{ github.sha }} .
+    
+    # Step 4: Push Docker image
+    - name: Push Docker image
+      run: |
+        docker push najiya123/cardvalidation-app:latest
+        docker push najiya123/cardvalidation-app:${{ github.sha }}

@@ -1,0 +1,234 @@
+{
+  "uuid": "cb9b9497-8da9-4468-82c4-440193a9e69e",
+  "historyId": "a1efe2fcb2ab75295a231940420df178",
+  "testCaseId": "2ca241ab4f0245bbba78c5cc3af89cf7",
+  "fullName": "CardValidation.Tests/IntegrationTests/Features/Credit Card Validation API/Validate Credit Card",
+  "labels": [
+    {
+      "name": "host",
+      "value": "Najiyas-MacBook-Air-2"
+    },
+    {
+      "name": "thread",
+      "value": "NUnit.Fw.NonParallelWorker"
+    },
+    {
+      "name": "language",
+      "value": "C#"
+    },
+    {
+      "name": "framework",
+      "value": "Reqnroll"
+    },
+    {
+      "name": "package",
+      "value": "IntegrationTests.Features.Credit Card Validation API"
+    },
+    {
+      "name": "feature",
+      "value": "Credit Card Validation API"
+    },
+    {
+      "name": "owner",
+      "value": "Faheem"
+    }
+  ],
+  "links": [],
+  "name": "Validate Credit Card",
+  "status": "broken",
+  "statusDetails": {
+    "known": false,
+    "muted": false,
+    "flaky": false,
+    "message": "Exception has been thrown by the target of an invocation.",
+    "trace": "System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.\n ---> NUnit.Framework.AssertionException:   Expected HTTP 200, but got 0. Response body: \nAssert.That(actualStatus, Is.EqualTo(expectedStatus))\n  Expected: 200\n  But was:  0\n\n   at NUnit.Framework.Assert.ReportFailure(String message)\n   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, String actualExpression, String constraintExpression)\n   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, FormattableString message, String actualExpression, String constraintExpression)\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_o(Int32 expectedStatus) in /Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/IntegrationTests/Steps/CreditCardValidationSteps.cs:line 88\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_u(Object[])\n   at Allure.Net.Commons.Steps.AllureAbstractStepAspect.WrapSyncVoid(Func`2 target, Object[] args, MethodBase metadata, String stepName, List`1 stepParameters)\n   at InvokeStub_AllureAbstractStepAspect.WrapSyncVoid(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   --- End of inner exception stack trace ---\n   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   at Allure.Net.Commons.Steps.AllureStepAspectBase.Around(String name, Object[] args, Func`2 target, MethodBase metadata, Type returnType)\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_w_0(Object[])\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.ThenTheResponseStatusShouldBe(Int32 expectedStatus)\n   at InvokeStub_Action`2.Invoke(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n--- End of stack trace from previous location ---\n   at Reqnroll.Bindings.BindingInvoker.InvokeBindingAsync(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, DurationHolder durationHolder)\n   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)\n   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepAsync(IContextManager contextManager, StepInstance stepInstance)\n   at Reqnroll.Infrastructure.TestExecutionEngine.OnAfterLastStepAsync()\n   at Reqnroll.TestRunner.CollectScenarioErrorsAsync()\n   at Allure.ReqnrollPlugin.SelectiveRun.TestPlanAwareTestRunner.CollectScenarioErrorsAsync()\n   at CardValidation.Tests.IntegrationTests.Features.CreditCardValidationAPIFeature.ScenarioCleanupAsync()\n   at CardValidation.Tests.IntegrationTests.Features.CreditCardValidationAPIFeature.ValidateCreditCard(String testCaseName, String owner, String number, String cvv, String issueDate, String expectedStatus, String expectedResult, String[] exampleTags) in /Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/IntegrationTests/Features/CreditCardValidation.Feature:line 14\n   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()\n   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)\n   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](TestExecutionContext context, Func`1 invoke)\n   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(TestExecutionContext context, Func`1 invoke)\n   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)\n   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)\n   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.<>c__DisplayClass1_0.<Execute>b__0()\n   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)"
+  },
+  "stage": "finished",
+  "steps": [
+    {
+      "name": "Given this is test case \"Valid American Express\"",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750007175738,
+      "stop": 1750007175742
+    },
+    {
+      "name": "Given I prepare a credit card with:",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Prepare credit card with provided data",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "table",
+              "value": "{\"Header\":[\"Owner\",\"Number\",\"Cvv\",\"IssueDate\"],\"Rows\":[{\"Owner\":\"Bob Johnson\",\"Number\":\"378282246310005\",\"Cvv\":\"1234\",\"IssueDate\":\"06/28\"}],\"RowCount\":1}",
+              "excluded": false
+            }
+          ],
+          "start": 1750007175743,
+          "stop": 1750007175743
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Data Table",
+          "source": "d03af6ee-f052-44ab-9f47-aad0f32a68b0-attachment.csv",
+          "type": "text/csv"
+        }
+      ],
+      "parameters": [],
+      "start": 1750007175742,
+      "stop": 1750007175743
+    },
+    {
+      "name": "When I send the card to the validation API",
+      "status": "passed",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Send credit card data to API",
+          "status": "passed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [],
+          "start": 1750007175743,
+          "stop": 1750007175745
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750007175743,
+      "stop": 1750007175745
+    },
+    {
+      "name": "Then the response status should be 200",
+      "status": "broken",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false,
+        "message": "Exception has been thrown by the target of an invocation.",
+        "trace": "System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.\n ---> NUnit.Framework.AssertionException:   Expected HTTP 200, but got 0. Response body: \nAssert.That(actualStatus, Is.EqualTo(expectedStatus))\n  Expected: 200\n  But was:  0\n\n   at NUnit.Framework.Assert.ReportFailure(String message)\n   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, String actualExpression, String constraintExpression)\n   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, FormattableString message, String actualExpression, String constraintExpression)\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_o(Int32 expectedStatus) in /Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/IntegrationTests/Steps/CreditCardValidationSteps.cs:line 88\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_u(Object[])\n   at Allure.Net.Commons.Steps.AllureAbstractStepAspect.WrapSyncVoid(Func`2 target, Object[] args, MethodBase metadata, String stepName, List`1 stepParameters)\n   at InvokeStub_AllureAbstractStepAspect.WrapSyncVoid(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   --- End of inner exception stack trace ---\n   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n   at Allure.Net.Commons.Steps.AllureStepAspectBase.Around(String name, Object[] args, Func`2 target, MethodBase metadata, Type returnType)\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_w_0(Object[])\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.ThenTheResponseStatusShouldBe(Int32 expectedStatus)\n   at InvokeStub_Action`2.Invoke(Object, Span`1)\n   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)\n--- End of stack trace from previous location ---\n   at Reqnroll.Bindings.BindingInvoker.InvokeBindingAsync(IBinding binding, IContextManager contextManager, Object[] arguments, ITestTracer testTracer, DurationHolder durationHolder)\n   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepMatchAsync(BindingMatch match, Object[] arguments, DurationHolder durationHolder)\n   at Reqnroll.Infrastructure.TestExecutionEngine.ExecuteStepAsync(IContextManager contextManager, StepInstance stepInstance)"
+      },
+      "stage": "finished",
+      "steps": [
+        {
+          "name": "Validate HTTP response status",
+          "status": "failed",
+          "statusDetails": {
+            "known": false,
+            "muted": false,
+            "flaky": false,
+            "message": "  Expected HTTP 200, but got 0. Response body: \nAssert.That(actualStatus, Is.EqualTo(expectedStatus))\n  Expected: 200\n  But was:  0\n",
+            "trace": "NUnit.Framework.AssertionException:   Expected HTTP 200, but got 0. Response body: \nAssert.That(actualStatus, Is.EqualTo(expectedStatus))\n  Expected: 200\n  But was:  0\n\n   at NUnit.Framework.Assert.ReportFailure(String message)\n   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, String actualExpression, String constraintExpression)\n   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, FormattableString message, String actualExpression, String constraintExpression)\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_o(Int32 expectedStatus) in /Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Tests/IntegrationTests/Steps/CreditCardValidationSteps.cs:line 88\n   at CardValidation.Tests.Steps.CreditCardValidationSteps.__a$_around_ThenTheResponseStatusShouldBe_100663350_u(Object[])\n   at Allure.Net.Commons.Steps.AllureAbstractStepAspect.WrapSyncVoid(Func`2 target, Object[] args, MethodBase metadata, String stepName, List`1 stepParameters)"
+          },
+          "stage": "finished",
+          "steps": [],
+          "attachments": [],
+          "parameters": [
+            {
+              "name": "expectedStatus",
+              "value": "200",
+              "excluded": false
+            }
+          ],
+          "start": 1750007175746,
+          "stop": 1750007175747
+        }
+      ],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750007175745,
+      "stop": 1750007175748
+    },
+    {
+      "name": "Then the response body should contain \"30\"",
+      "status": "skipped",
+      "statusDetails": {
+        "known": false,
+        "muted": false,
+        "flaky": false
+      },
+      "stage": "finished",
+      "steps": [],
+      "attachments": [],
+      "parameters": [],
+      "start": 1750007175748,
+      "stop": 1750007175748
+    }
+  ],
+  "attachments": [],
+  "parameters": [
+    {
+      "name": "TestCaseName",
+      "value": "\"Valid American Express\"",
+      "excluded": false
+    },
+    {
+      "name": "Owner",
+      "value": "\"Bob Johnson\"",
+      "excluded": false
+    },
+    {
+      "name": "Number",
+      "value": "\"378282246310005\"",
+      "excluded": false
+    },
+    {
+      "name": "Cvv",
+      "value": "\"1234\"",
+      "excluded": false
+    },
+    {
+      "name": "IssueDate",
+      "value": "\"06/28\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedStatus",
+      "value": "\"200\"",
+      "excluded": false
+    },
+    {
+      "name": "ExpectedResult",
+      "value": "\"30\"",
+      "excluded": false
+    }
+  ],
+  "start": 1750007175738,
+  "stop": 1750007175748
+}
