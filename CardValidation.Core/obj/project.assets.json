@@ -337,11 +337,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj",
+      "projectUniqueName": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/CardValidation.Core.csproj",
       "projectName": "CardValidation.Core",
-      "projectPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/CardValidation.Core.csproj",
+      "projectPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/CardValidation.Core.csproj",
       "packagesPath": "/Users/najiyanasrin/.nuget/packages/",
-      "outputPath": "/Users/najiyanasrin/Desktop/qa-home-assignment/CardValidation.Core/obj/",
+      "outputPath": "/Users/najiyanasrin/Desktop/TEST-QA/CardValidation.Core/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/najiyanasrin/.nuget/NuGet/NuGet.Config"

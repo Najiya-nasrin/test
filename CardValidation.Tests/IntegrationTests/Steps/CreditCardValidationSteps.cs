@@ -1,7 +1,10 @@
 using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
-using RestSharp;
 using Reqnroll;
 using Allure.NUnit;
 using Allure.NUnit.Attributes;
@@ -11,29 +14,24 @@ namespace CardValidation.Tests.Steps
     [Binding]
     [AllureNUnit]
     [AllureSuite("Credit Card Validation API Tests")]
-    public class CreditCardValidationSteps
+    public class CreditCardValidationSteps : IDisposable
     {
-        private readonly RestClient _client;
-        private RestRequest? _request;
-        private RestResponse? _response;
+        private readonly WebApplicationFactory<Program> _factory;
+        private readonly HttpClient _client;
+        private HttpRequestMessage? _request;
+        private HttpResponseMessage? _response;
+        private bool _disposed = false;
 
-          public CreditCardValidationSteps()
+        public CreditCardValidationSteps()
         {
-            // Get API URL from environment variable
-            // When running in Docker, use host.docker.internal to reach host machine
-            var apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ?? "https://localhost:7135";
-            
-            var options = new RestClientOptions(apiBaseUrl)
-            {
-                // Skip SSL certificate validation for development/testing
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-            };
-            
-            _client = new RestClient(options);
-            
-            Console.WriteLine($"API Base URL: {apiBaseUrl}");
-        }
+            // Create the test server factory
+            _factory = new WebApplicationFactory<Program>();
 
+            // Create HTTP client from the test server
+            _client = _factory.CreateClient();
+            
+            Console.WriteLine("TestHost initialized for API testing");
+        }
 
         [Given(@"this is test case ""(.*)""")]
         public void GivenThisIsTestCase(string testCaseName)
@@ -57,14 +55,23 @@ namespace CardValidation.Tests.Steps
             var cvv = row["Cvv"]?.Trim() ?? string.Empty;
             var issueDate = row["IssueDate"]?.Trim() ?? string.Empty;
 
-            _request = new RestRequest("/CardValidation/card/credit/validate", Method.Post)
-                .AddJsonBody(new
-                {
-                    owner,
-                    number,
-                    cvv,
-                    date = issueDate
-                });
+            // Create the request payload
+            var payload = new
+            {
+                owner,
+                number,
+                cvv,
+                date = issueDate
+            };
+
+            var jsonContent = JsonSerializer.Serialize(payload);
+            
+            _request = new HttpRequestMessage(HttpMethod.Post, "/CardValidation/card/credit/validate")
+            {
+                Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+            };
+
+            Console.WriteLine($"Prepared request with payload: {jsonContent}");
         }
 
         [When(@"I send the card to the validation API")]
@@ -74,7 +81,9 @@ namespace CardValidation.Tests.Steps
             if (_request == null)
                 throw new InvalidOperationException("Request has not been initialized.");
 
-            _response = await _client.ExecuteAsync(_request);
+            _response = await _client.SendAsync(_request);
+            
+            Console.WriteLine($"Received response with status: {_response.StatusCode}");
         }
 
         [Then(@"the response status should be (.*)")]
@@ -85,19 +94,42 @@ namespace CardValidation.Tests.Steps
                 throw new InvalidOperationException("Response has not been received yet.");
 
             var actualStatus = (int)_response.StatusCode;
+            var responseBody = _response.Content.ReadAsStringAsync().Result;
+            
             Assert.That(actualStatus, Is.EqualTo(expectedStatus), 
-                $"Expected HTTP {expectedStatus}, but got {actualStatus}. Response body: {_response.Content}");
+                $"Expected HTTP {expectedStatus}, but got {actualStatus}. Response body: {responseBody}");
         }
 
         [Then(@"the response body should contain ""(.*)""")]
         [AllureStep("Validate response body content")]
-        public void ThenTheResponseBodyShouldContain(string expectedResult)
+        public async Task ThenTheResponseBodyShouldContain(string expectedResult)
         {
             if (_response == null)
                 throw new InvalidOperationException("Response has not been received yet.");
 
-            Assert.That(_response.Content, Does.Contain(expectedResult).IgnoreCase,
-                $"Expected response body to contain '{expectedResult}', but got: {_response.Content}");
+            var responseContent = await _response.Content.ReadAsStringAsync();
+            
+            Assert.That(responseContent, Does.Contain(expectedResult).IgnoreCase,
+                $"Expected response body to contain '{expectedResult}', but got: {responseContent}");
+        }
+
+        // Implement IDisposable to clean up resources
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed && disposing)
+            {
+                _request?.Dispose();
+                _response?.Dispose();
+                _client?.Dispose();
+                _factory?.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

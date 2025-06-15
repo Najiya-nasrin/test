@@ -1,0 +1,35 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# Use the .NET 8 SDK image to build the app
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+# Copy project files
+COPY ["CardValidation.Web/CardValidation.Web.csproj", "CardValidation.Web/"]
+COPY ["CardValidation.Core/CardValidation.Core.csproj", "CardValidation.Core/"]
+
+# Restore dependencies
+RUN dotnet restore "CardValidation.Web/CardValidation.Web.csproj"
+
+# Copy all source code
+COPY . .
+
+# Build the application
+WORKDIR "/src/CardValidation.Web"
+RUN dotnet build "CardValidation.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Publish the application
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "CardValidation.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# Final stage - create the runtime image
+FROM base AS final
+WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:8080
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "CardValidation.Web.dll"]

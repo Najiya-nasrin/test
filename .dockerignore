@@ -1,0 +1,30 @@
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+
+# Test results
+**/TestResults/
+**/allure-reports/
+**/allure-results/
+**/CoverageReport/
+
+# IDE files
+**/.vs/
+**/.vscode/
+**/*.user
+**/*.suo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+README.md
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore

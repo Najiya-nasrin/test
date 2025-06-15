@@ -1,20 +1,31 @@
-# Use the official .NET SDK image
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
-# Set working directory
-WORKDIR /app
+# Copy solution file
+COPY CardValidation.sln .
 
-# Copy everything first (we'll optimize later once it works)
-COPY . ./
+# Copy project files
+COPY CardValidation.Core/CardValidation.Core.csproj CardValidation.Core/
+COPY CardValidation.Tests/CardValidation.Tests.csproj CardValidation.Tests/
+COPY CardValidation.Web/CardValidation.Web.csproj CardValidation.Web/
 
 # Restore dependencies
-RUN dotnet restore
+RUN dotnet restore CardValidation.sln
 
-# Build the application
-RUN dotnet build --configuration Release --no-restore
+# Copy source code
+COPY . .
 
-# Run tests
-RUN dotnet test --configuration Release --no-build
+# Build and publish
+RUN dotnet publish CardValidation.Web/CardValidation.Web.csproj -c Release -o /app/publish
 
-# Set the entry point to keep container running
-CMD ["tail", "-f", "/dev/null"]
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Expose port
+EXPOSE 8080
+
+# Start the application
+ENTRYPOINT ["dotnet", "CardValidation.Web.dll"]

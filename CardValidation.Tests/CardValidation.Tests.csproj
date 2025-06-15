@@ -25,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="8.3.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
   </ItemGroup>
 
   <!-- BDD Testing (Reqnroll/SpecFlow) -->
