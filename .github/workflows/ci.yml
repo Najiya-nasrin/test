@@ -34,7 +34,7 @@ jobs:
     # Step 5: Run all tests (Unit + Integration with TestHost)
     - name: Run Tests with TestHost
       run: |
-        dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
+        dotnet test CardValidation.sln \
           --configuration Release \
           --no-build \
           --verbosity normal \
@@ -105,7 +105,34 @@ jobs:
           find . -name "*.json" | head -10
         fi
     
-    # Step 8: Upload test results and Allure report
+    # Step 8: Generate Code Coverage Report
+    - name: Generate Code Coverage Report
+      run: |
+        echo "Generating code coverage report..."
+        
+        # Install ReportGenerator tool
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        
+        # Find coverage files
+        echo "Looking for coverage files..."
+        find TestResults -name "*.cobertura.xml" -o -name "coverage.cobertura.xml" | head -5
+        
+        # Generate HTML coverage report
+        reportgenerator \
+          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -targetdir:"TestResults/coverage-report" \
+          -reporttypes:"Html;Cobertura;JsonSummary" \
+          -verbosity:Info
+        
+        echo "Coverage report generated in TestResults/coverage-report"
+        ls -la TestResults/coverage-report/
+        
+        # Display coverage summary if available
+        if [ -f "TestResults/coverage-report/Summary.json" ]; then
+          echo "Coverage Summary:"
+          cat TestResults/coverage-report/Summary.json
+        fi
+    
     - name: Upload test results and Allure report
       uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
