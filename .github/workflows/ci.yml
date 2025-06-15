@@ -34,7 +34,7 @@ jobs:
     # Step 5: Run all tests (Unit + Integration with TestHost)
     - name: Run Tests with TestHost
       run: |
-        dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
+        dotnet test CardValidation.sln \
           --configuration Release \
           --no-build \
           --verbosity normal \
