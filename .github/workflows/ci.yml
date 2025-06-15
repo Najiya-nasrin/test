@@ -43,16 +43,54 @@ jobs:
           --collect:"XPlat Code Coverage"
       env:
         ASPNETCORE_ENVIRONMENT: Testing
+        ALLURE_RESULTS_DIRECTORY: allure-results
     
-    # Step 6: Upload test results
-    - name: Upload test results
+    # Step 6: Install Allure CLI
+    - name: Install Allure CLI
+      run: |
+        # Install Java (required for Allure)
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jre-headless
+        
+        # Download and install Allure
+        wget -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+        tar -xzf allure.tgz
+        sudo mv allure-2.24.0 /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+        
+        # Verify installation
+        allure --version
+    
+    # Step 7: Generate Allure Report
+    - name: Generate Allure Report
+      run: |
+        echo "Checking for allure-results directory..."
+        ls -la
+        if [ -d "allure-results" ]; then
+          echo "Found allure-results directory:"
+          ls -la allure-results/
+          allure generate allure-results --clean -o allure-report
+          echo "Allure report generated successfully!"
+          ls -la allure-report/
+        else
+          echo "No allure-results directory found. Creating empty report..."
+          mkdir -p allure-results
+          echo '{"name": "No tests found", "status": "broken"}' > allure-results/empty-test-result.json
+          allure generate allure-results --clean -o allure-report
+        fi
+    
+    # Step 8: Upload test results and Allure report
+    - name: Upload test results and Allure report
       uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
       with:
-        name: test-results
-        path: TestResults/
+        name: test-results-and-allure-report
+        path: |
+          TestResults/
+          allure-results/
+          allure-report/
     
-    # Step 7: Upload code coverage (optional)
+    # Step 9: Upload code coverage (optional)
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4
       if: always()
