@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CardValidation.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f00f438567e1c0ec84b309521a59b2bf948c2c9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d7c18ab3dda4b050a66484aba8bd04bcfc14d4f5")]
 [assembly: System.Reflection.AssemblyProductAttribute("CardValidation.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CardValidation.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
