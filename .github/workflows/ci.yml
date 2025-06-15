@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# When to run this pipeline
 on:
   push:
     branches: [ main, develop ]
@@ -8,31 +7,25 @@ on:
     branches: [ main ]
 
 jobs:
-  # Job 1: Run tests with TestHost (no external API needed)
   test:
     runs-on: ubuntu-latest
     
     steps:
-    # Step 1: Get your code
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # Step 2: Install .NET
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Change to your .NET version
+        dotnet-version: '8.0.x'
     
-    # Step 3: Restore NuGet packages
     - name: Restore dependencies
       run: dotnet restore CardValidation.sln
     
-    # Step 4: Build the solution
     - name: Build solution
       run: dotnet build CardValidation.sln --configuration Release --no-restore
     
-    # Step 5: Run all tests (Unit + Integration with TestHost)
-    - name: Run Tests with TestHost
+    - name: Run tests
       run: |
         dotnet test CardValidation.sln \
           --configuration Release \
@@ -44,105 +37,59 @@ jobs:
       env:
         ASPNETCORE_ENVIRONMENT: Testing
     
-    # Step 6: Install Allure CLI
     - name: Install Allure CLI
       run: |
-        # Install Java (required for Allure)
-        sudo apt-get update
-        sudo apt-get install -y openjdk-11-jre-headless
-        
-        # Download and install Allure
-        wget -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq openjdk-11-jre-headless
+        wget -q -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
         tar -xzf allure.tgz
         sudo mv allure-2.24.0 /opt/allure
         sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
-        
-        # Verify installation
         allure --version
     
-    # Step 7: Generate Allure Report from CardValidation.Tests
-    - name: Generate Allure Report from Test Project
+    - name: Generate Allure report
       run: |
-        echo "Looking for allure-results in CardValidation.Tests directory..."
         cd CardValidation.Tests
-        
-        echo "Current directory: $(pwd)"
-        echo "Directory contents:"
-        ls -la
-        
-        if [ -d "allure-results" ]; then
-          echo "Found allure-results directory:"
-          ls -la allure-results/
-          
-          echo "Checking if allure-results contains actual test data:"
-          file_count=$(find allure-results -name "*.json" | wc -l)
-          echo "Found $file_count JSON files in allure-results"
-          
-          if [ $file_count -gt 0 ]; then
-            echo "Sample files in allure-results:"
-            find allure-results -name "*.json" | head -3 | xargs ls -la
-            
-            # Generate the allure report with single-file option for better portability
-            echo "Generating Allure report..."
-            allure generate allure-results --clean -o ../TestResults/allure-report --single-file
-            
-            echo "Allure report generated successfully in TestResults/allure-report"
-            ls -la ../TestResults/allure-report/
-            
-          else
-            echo "No JSON files found in allure-results - tests may not have generated Allure data"
-            echo "Contents of allure-results:"
-            ls -la allure-results/
-          fi
-          
+        if [ -d "allure-results" ] && [ "$(find allure-results -name "*.json" | wc -l)" -gt 0 ]; then
+          allure generate allure-results --clean -o ../TestResults/allure-report --single-file
+          echo "✅ Allure report generated successfully"
         else
-          echo "No allure-results found in CardValidation.Tests directory"
-          echo "Searching for allure-results in subdirectories..."
-          find . -name "allure-results" -type d
-          
-          # Check if there are any JSON files that might be allure results
-          echo "Looking for potential Allure result files:"
-          find . -name "*.json" | head -10
+          echo "⚠️ No Allure results found - skipping report generation"
+          mkdir -p ../TestResults/allure-report
+          echo "<h1>No Allure Results Found</h1><p>Tests ran but no Allure data was generated.</p>" > ../TestResults/allure-report/index.html
         fi
     
-    # Step 8: Generate Code Coverage Report
-    - name: Generate Code Coverage Report
+    - name: Generate coverage report
       run: |
-        echo "Generating code coverage report..."
-        
-        # Install ReportGenerator tool
         dotnet tool install -g dotnet-reportgenerator-globaltool
         
-        # Find coverage files
-        echo "Looking for coverage files..."
-        find TestResults -name "*.cobertura.xml" -o -name "coverage.cobertura.xml" | head -5
-        
-        # Generate HTML coverage report
-        reportgenerator \
-          -reports:"TestResults/**/coverage.cobertura.xml" \
-          -targetdir:"TestResults/coverage-report" \
-          -reporttypes:"Html;Cobertura;JsonSummary" \
-          -verbosity:Info
-        
-        echo "Coverage report generated in TestResults/coverage-report"
-        ls -la TestResults/coverage-report/
-        
-        # Display coverage summary if available
-        if [ -f "TestResults/coverage-report/Summary.json" ]; then
-          echo "Coverage Summary:"
-          cat TestResults/coverage-report/Summary.json
+        if find TestResults -name "coverage.cobertura.xml" -type f | grep -q .; then
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"TestResults/coverage-report" \
+            -reporttypes:"Html;JsonSummary" \
+            -verbosity:Warning
+          echo "✅ Coverage report generated successfully"
+          
+          if [ -f "TestResults/coverage-report/Summary.json" ]; then
+            echo "📊 Coverage Summary:"
+            cat TestResults/coverage-report/Summary.json
+          fi
+        else
+          echo "⚠️ No coverage files found"
         fi
     
-    - name: Upload test results and Allure report
+    - name: Upload test artifacts
       uses: actions/upload-artifact@v4
-      if: always()  # Upload even if tests fail
+      if: always()
       with:
-        name: test-results-and-allure-report
+        name: test-results-and-reports
         path: |
-          TestResults/
+          TestResults/allure-report/
+          TestResults/coverage-report/
+        retention-days: 30
     
-    # Step 9: Upload code coverage (optional)
-    - name: Upload coverage reports to Codecov
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       if: always()
       with:
@@ -151,31 +98,23 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # Job 2: Build and push Docker image (only runs if tests pass)
   docker-build:
-    needs: test  # This job waits for 'test' job to complete successfully
+    needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Only build Docker on push, not PR
     
     steps:
-    # Step 1: Get your code
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # Step 2: Login to Docker Hub
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    # Step 3: Build Docker image
-    - name: Build Docker image
+    - name: Build and push Docker image
       run: |
-        docker build -t najiya123/cardvalidation-app:latest .
-        docker build -t najiya123/cardvalidation-app:${{ github.sha }} .
-    
-    # Step 4: Push Docker image
-    - name: Push Docker image
-      run: |
+        docker build -t najiya123/cardvalidation-app:latest -t najiya123/cardvalidation-app:${{ github.sha }} .
         docker push najiya123/cardvalidation-app:latest
         docker push najiya123/cardvalidation-app:${{ github.sha }}
