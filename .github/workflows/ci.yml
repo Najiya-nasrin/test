@@ -43,7 +43,6 @@ jobs:
           --collect:"XPlat Code Coverage"
       env:
         ASPNETCORE_ENVIRONMENT: Testing
-        ALLURE_RESULTS_DIRECTORY: allure-results
     
     # Step 6: Install Allure CLI
     - name: Install Allure CLI
@@ -64,19 +63,53 @@ jobs:
     # Step 7: Generate Allure Report
     - name: Generate Allure Report
       run: |
-        echo "Checking for allure-results directory..."
-        ls -la
-        if [ -d "allure-results" ]; then
-          echo "Found allure-results directory:"
-          ls -la allure-results/
-          allure generate allure-results --clean -o allure-report
+        echo "Checking for allure-results in test project directory..."
+        ls -la CardValidation.Tests/
+        
+        if [ -d "CardValidation.Tests/allure-results" ]; then
+          echo "Found allure-results in CardValidation.Tests:"
+          ls -la CardValidation.Tests/allure-results/
+          
+          # Generate report from the test project's allure-results
+          allure generate CardValidation.Tests/allure-results --clean -o allure-report
           echo "Allure report generated successfully!"
           ls -la allure-report/
+          
+        elif [ -d "CardValidation.Tests/bin/Debug/net8.0/allure-results" ]; then
+          echo "Found allure-results in bin directory:"
+          ls -la CardValidation.Tests/bin/Debug/net8.0/allure-results/
+          
+          # Generate report from the bin directory
+          allure generate CardValidation.Tests/bin/Debug/net8.0/allure-results --clean -o allure-report
+          echo "Allure report generated successfully!"
+          ls -la allure-report/
+          
+        elif [ -d "CardValidation.Tests/bin/Release/net8.0/allure-results" ]; then
+          echo "Found allure-results in release bin directory:"
+          ls -la CardValidation.Tests/bin/Release/net8.0/allure-results/
+          
+          # Generate report from the release bin directory
+          allure generate CardValidation.Tests/bin/Release/net8.0/allure-results --clean -o allure-report
+          echo "Allure report generated successfully!"
+          ls -la allure-report/
+          
         else
-          echo "No allure-results directory found. Creating empty report..."
-          mkdir -p allure-results
-          echo '{"name": "No tests found", "status": "broken"}' > allure-results/empty-test-result.json
-          allure generate allure-results --clean -o allure-report
+          echo "Searching for allure-results in all subdirectories..."
+          find . -name "allure-results" -type d
+          
+          # Try to find any allure-results directory
+          ALLURE_DIR=$(find . -name "allure-results" -type d | head -1)
+          if [ -n "$ALLURE_DIR" ]; then
+            echo "Found allure-results at: $ALLURE_DIR"
+            ls -la "$ALLURE_DIR/"
+            allure generate "$ALLURE_DIR" --clean -o allure-report
+            echo "Allure report generated successfully!"
+          else
+            echo "No allure-results directory found anywhere. Creating empty report..."
+            mkdir -p allure-results
+            echo '{"name": "No tests found", "status": "broken"}' > allure-results/empty-test-result.json
+            allure generate allure-results --clean -o allure-report
+          fi
         fi
     
     # Step 8: Upload test results and Allure report
@@ -87,7 +120,8 @@ jobs:
         name: test-results-and-allure-report
         path: |
           TestResults/
-          allure-results/
+          CardValidation.Tests/allure-results/
+          CardValidation.Tests/bin/**/allure-results/
           allure-report/
     
     # Step 9: Upload code coverage (optional)
