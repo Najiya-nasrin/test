@@ -35,14 +35,14 @@ jobs:
     - name: Run Tests with TestHost
       run: |
         dotnet test CardValidation.sln \
-          --configuration Debug \
+          --configuration Release \
           --no-build \
           --verbosity normal \
           --logger trx \
           --results-directory TestResults \
           --collect:"XPlat Code Coverage"
       env:
-        ASPNETCORE_ENVIRONMENT: Development
+        ASPNETCORE_ENVIRONMENT: Testing
     
     # Step 6: Install Allure CLI
     - name: Install Allure CLI
