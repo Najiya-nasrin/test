@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 jobs:
-  # Job 1: Run tests
+  # Job 1: Run tests with TestHost (no external API needed)
   test:
     runs-on: ubuntu-latest
     
@@ -31,71 +31,36 @@ jobs:
     - name: Build solution
       run: dotnet build CardValidation.sln --configuration Release --no-restore
     
-    # Step 5: Run Unit Tests
-    - name: Run Unit Tests
+    # Step 5: Run all tests (Unit + Integration with TestHost)
+    - name: Run Tests with TestHost
       run: |
         dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
           --configuration Release \
           --no-build \
           --verbosity normal \
           --logger trx \
-          --results-directory TestResults/Unit
-    
-    # Step 6: Start Web API for Integration Tests
-    - name: Start Web API
-      run: |
-        # Start API in background
-        dotnet run --project CardValidation.Web/CardValidation.Web.csproj --configuration Release --no-build &
-        API_PID=$!
-        echo "API_PID=$API_PID" >> $GITHUB_ENV
-        echo "Web API started with PID: $API_PID"
-        sleep 15  # Wait for API to start
+          --results-directory TestResults \
+          --collect:"XPlat Code Coverage"
       env:
         ASPNETCORE_ENVIRONMENT: Testing
-        ASPNETCORE_URLS: http://localhost:7135
     
-    # Step 7: Wait for API to be ready
-    - name: Wait for API to be ready
-      run: |
-        echo "Waiting for API to be ready..."
-        for i in {1..30}; do
-          if curl -s http://localhost:7135 > /dev/null 2>&1; then
-            echo "API is ready!"
-            break
-          fi
-          echo "Attempt $i: API not ready yet, waiting..."
-          sleep 2
-        done
-        # Test the actual endpoint
-        curl -s http://localhost:7135/CardValidation/card/credit/validate || echo "Validation endpoint check completed"
-    
-    # Step 8: Run Integration Tests
-    - name: Run Integration Tests
-      run: |
-        dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
-          --configuration Release \
-          --no-build \
-          --verbosity normal \
-          --logger trx \
-          --results-directory TestResults/Integration
-      env:
-        API_BASE_URL: http://localhost:7135
-    
-    # Step 9: Stop API
-    - name: Stop Web API
-      if: always()
-      run: |
-        if [ ! -z "$API_PID" ]; then
-          kill $API_PID 2>/dev/null || echo "API process already stopped"
-        fi
-    
-    # Step 9: Upload test results (so you can download them if needed)
+    # Step 6: Upload test results
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
       with:
         name: test-results
         path: TestResults/
+    
+    # Step 7: Upload code coverage (optional)
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        directory: TestResults
+        fail_ci_if_error: false
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Job 2: Build and push Docker image (only runs if tests pass)
   docker-build:
