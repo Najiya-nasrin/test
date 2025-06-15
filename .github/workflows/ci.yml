@@ -84,14 +84,10 @@ jobs:
             
             # Generate the allure report with single-file option for better portability
             echo "Generating Allure report..."
-            allure generate allure-results --clean -o allure-report --single-file
+            allure generate allure-results --clean -o ../TestResults/allure-report --single-file
             
-            echo "Allure report generated successfully in CardValidation.Tests/allure-report"
-            ls -la allure-report/
-            
-            # Also create a traditional report as backup
-            echo "Creating traditional multi-file report as backup..."
-            allure generate allure-results --clean -o allure-report-traditional
+            echo "Allure report generated successfully in TestResults/allure-report"
+            ls -la ../TestResults/allure-report/
             
           else
             echo "No JSON files found in allure-results - tests may not have generated Allure data"
@@ -108,19 +104,6 @@ jobs:
           echo "Looking for potential Allure result files:"
           find . -name "*.json" | head -10
         fi
-        
-        # Always create a debug report regardless
-        echo "Creating debug information file..."
-        mkdir -p allure-debug
-        echo "Test execution completed at $(date)" > allure-debug/debug-info.txt
-        echo "Directory listing:" >> allure-debug/debug-info.txt
-        ls -la >> allure-debug/debug-info.txt
-        echo "Allure-results contents:" >> allure-debug/debug-info.txt
-        if [ -d "allure-results" ]; then
-          ls -la allure-results/ >> allure-debug/debug-info.txt
-        else
-          echo "No allure-results directory found" >> allure-debug/debug-info.txt
-        fi
     
     # Step 8: Upload test results and Allure report
     - name: Upload test results and Allure report
@@ -130,11 +113,6 @@ jobs:
         name: test-results-and-allure-report
         path: |
           TestResults/
-          CardValidation.Tests/allure-results/
-          CardValidation.Tests/allure-report/
-          CardValidation.Tests/allure-report-traditional/
-          CardValidation.Tests/allure-debug/
-          CardValidation.Tests/allureConfig.json
     
     # Step 9: Upload code coverage (optional)
     - name: Upload coverage reports to Codecov
