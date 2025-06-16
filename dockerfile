@@ -16,16 +16,21 @@ RUN dotnet publish CardValidation.Web/CardValidation.Web.csproj -c Release -o /a
 # --- Test stage ---
 FROM build AS test
 WORKDIR /src
-# Run tests and output results
+
+# Run tests and generate Allure results into /app/allure-results
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
     /p:CollectCoverage=true \
     /p:CoverletOutputFormat=cobertura \
-    /p:CoverletOutput=/app/test-results/coverage.xml
+    /p:CoverletOutput=/app/test-results/coverage.xml \
+    -- TestRunParameters.Parameter(name=\"AllureConfig\",value=\"true\")
 
-# Copy allure results (if your tests generate them)
-# RUN cp -r /src/CardValidation.Tests/allure-results /app/allure-results || true
+# Move Allure output if created (assuming NUnit + Allure adapter outputs to default path)
+RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
+      cp -r CardValidation.Tests/allure-results /app/allure-results; \
+    fi
+
 
 # --- Runtime stage ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
