@@ -33,13 +33,11 @@ jobs:
         docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
         docker rm test-runner
 
-    - name: Load Allure Report history
-      uses: actions/checkout@v4
+    - name: Load Allure Report history (safe)
       if: always()
-      continue-on-error: true
-      with:
-        ref: gh-pages
-        path: gh-pages
+      run: |
+        git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages || echo "No gh-pages branch yet"
+        rm -rf gh-pages/.git
 
     - name: Build Allure Report
       uses: simple-elf/allure-report-action@v1.7
