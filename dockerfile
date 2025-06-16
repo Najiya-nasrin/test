@@ -21,9 +21,16 @@ FROM build AS test
 # Create test results directory
 RUN mkdir -p /app/test-results
 
-# Install reportgenerator tool for test coverage (optional)
+# Install reportgenerator tool for test coverage
 RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Install Allure for test reporting
+RUN apt-get update && apt-get install -y openjdk-11-jre-headless wget
+RUN wget -O allure-commandline.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz && \
+    tar -zxf allure-commandline.tgz -C /opt/ && \
+    ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure && \
+    rm allure-commandline.tgz
 
 # Run all tests with coverage collection (matching local setup exactly)
 RUN dotnet test --collect:"XPlat Code Coverage" --results-directory ./test-results
@@ -40,11 +47,18 @@ RUN dotnet test \
     --results-directory ./test-results \
     --no-build || true
 
-# Generate HTML coverage report (optional)
+# Generate HTML coverage report (optional - second instance for consistency)
 RUN reportgenerator \
     "-reports:/app/test-results/**/coverage.cobertura.xml" \
     "-targetdir:/app/test-results/coverage-report" \
     "-reporttypes:Html" || true
+
+# Generate Allure report if allure-results directory exists
+RUN if [ -d "/app/allure-results" ]; then \
+        allure generate /app/allure-results --clean -o /app/test-results/allure-report; \
+    else \
+        echo "No allure-results directory found, skipping Allure report generation"; \
+    fi
 
 # Production build stage
 FROM build AS publish

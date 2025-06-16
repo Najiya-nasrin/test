@@ -30,40 +30,86 @@ jobs:
       run: |
         # Create container and copy test results
         docker create --name test-container card-validation-tests
-        docker cp test-container:/app/test-results ./test-results || echo "No test results found"
+        docker cp test-container:/app/test-results ./test-results || echo "No test-results found"
+        docker cp test-container:/app/allure-results ./allure-results || echo "No allure-results found"
         docker rm test-container
         
-        # List test results for debugging
+        # List all results for debugging
+        echo "=== Test Results Directory ==="
         ls -la test-results/ || echo "Test results directory not found"
+        
+        echo "=== Allure Results Directory ==="
+        ls -la allure-results/ || echo "Allure results directory not found"
+        
+        echo "=== Coverage Reports ==="
+        ls -la test-results/CoverageReport/ || echo "Coverage report directory not found"
         
     - name: Display test summary
       if: always()
       run: |
-        echo "=== Test Results Summary ==="
-        find test-results -name "*.trx" -exec echo "Found TRX: {}" \;
-        
-        echo "=== Coverage Files ==="
-        find test-results -name "coverage.cobertura.xml" -exec echo "Coverage XML: {}" \;
-        find test-results -name "index.html" -exec echo "Coverage HTML: {}" \;
-        
-        echo "=== Coverage Report Structure ==="
-        ls -la test-results/CoverageReport/ 2>/dev/null || echo "No coverage report directory found"
-        
-        echo "=== Directory Structure ==="
-        ls -la test-results/ || echo "Test results directory not found"
-        
         echo "=== Test Execution Summary ==="
         if [ -f "test-results/all-tests.trx" ]; then
-          echo "Tests executed successfully"
-          grep -c "<UnitTestResult" test-results/all-tests.trx || echo "Could not count test results"
+          echo "✅ All tests completed - TRX file found"
+        else
+          echo "❌ Test results (TRX) not found"
         fi
         
-    - name: Upload test results
+        echo "=== Coverage Report ==="
+        if [ -d "test-results/CoverageReport" ]; then
+          echo "✅ Coverage report generated successfully"
+          ls -la test-results/CoverageReport/ | head -5
+        else
+          echo "❌ Coverage report not found"
+        fi
+        
+        echo "=== Allure Report ==="
+        if [ -d "test-results/allure-report" ]; then
+          echo "✅ Allure report generated successfully"
+          ls -la test-results/allure-report/ | head -5
+        else
+          echo "❌ Allure report not found"
+        fi
+        
+        echo "=== Raw Allure Results ==="
+        if [ -d "allure-results" ]; then
+          echo "✅ Allure raw results found"
+          ls -la allure-results/ | head -5
+        else
+          echo "❌ Allure raw results not found"
+        fi
+        
+    - name: Upload test results and coverage
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
-        path: test-results/
+        name: test-results-and-coverage
+        path: |
+          test-results/
+          allure-results/
+        if-no-files-found: warn
+        
+    - name: Upload Coverage Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: test-results/CoverageReport/
+        if-no-files-found: warn
+        
+    - name: Upload Allure Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: test-results/allure-report/
+        if-no-files-found: warn
+        
+    - name: Upload Raw Allure Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-raw-results
+        path: allure-results/
         if-no-files-found: warn
         
     - name: Build production image
