@@ -86,7 +86,7 @@ jobs:
     - name: Build production image
       if: success()
       run: |
-        docker build --target runtime -t ${{ env.DOCKER_IMAGE_NAME }} .
+        docker build --target final -t ${{ env.DOCKER_IMAGE_NAME }} .
 
     - name: Login to Docker Hub
       if: success() && github.ref == 'refs/heads/main'

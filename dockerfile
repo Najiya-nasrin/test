@@ -11,6 +11,8 @@ RUN dotnet restore CardValidation.sln
 
 COPY . .
 
+RUN dotnet publish CardValidation.Web/CardValidation.Web.csproj -c Release -o /app/publish
+
 # --- Test stage ---
 FROM build AS test
 WORKDIR /src
