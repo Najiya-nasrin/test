@@ -8,6 +8,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <GenerateAllureReport>true</GenerateAllureReport>
+    <GenerateCoverletReport>true</GenerateCoverletReport>
   </PropertyGroup>
 
   <!-- Test Framework Dependencies -->
