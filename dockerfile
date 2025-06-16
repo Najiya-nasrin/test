@@ -63,23 +63,27 @@ RUN echo "=== Contents of /app ===" && \
     echo "=== Contents of CardValidation.Tests ===" && \
     ls -la /app/CardValidation.Tests/ 2>/dev/null || echo "CardValidation.Tests directory not found"
 
-# Copy allure results from wherever they are generated to a consistent location
+# Copy allure results from CardValidation.Tests to a consistent location
 RUN mkdir -p /app/allure-results && \
-    find /app -name "allure-results" -type d -not -path "/app/allure-results" -exec cp -r {}/* /app/allure-results/ \; 2>/dev/null || \
-    echo "No allure-results found to copy"
+    if [ -d "/app/CardValidation.Tests/allure-results" ] && [ "$(ls -A /app/CardValidation.Tests/allure-results 2>/dev/null)" ]; then \
+        cp -r /app/CardValidation.Tests/allure-results/* /app/allure-results/; \
+        echo "Allure results copied from CardValidation.Tests to /app/allure-results"; \
+    else \
+        echo "No allure-results found in CardValidation.Tests to copy"; \
+    fi
 
 # Debug: Check if we now have allure results
 RUN echo "=== Final allure-results check ===" && \
     ls -la /app/allure-results/ 2>/dev/null || echo "No allure-results in /app/allure-results/"
 
-# Generate Allure report if allure-results directory exists and has content
-RUN if [ -d "/app/allure-results" ] && [ "$(ls -A /app/allure-results 2>/dev/null)" ]; then \
-        echo "Generating Allure report from /app/allure-results"; \
-        allure generate /app/allure-results --clean -o /app/test-results/allure-report; \
+# Generate Allure report directly from CardValidation.Tests/allure-results
+RUN if [ -d "/app/CardValidation.Tests/allure-results" ] && [ "$(ls -A /app/CardValidation.Tests/allure-results 2>/dev/null)" ]; then \
+        echo "Generating Allure report from /app/CardValidation.Tests/allure-results"; \
+        allure generate /app/CardValidation.Tests/allure-results --clean -o /app/test-results/allure-report; \
         echo "Allure report generated successfully"; \
         ls -la /app/test-results/allure-report/ || echo "Allure report directory is empty"; \
     else \
-        echo "No allure-results found or directory is empty, skipping Allure report generation"; \
+        echo "No allure-results found in CardValidation.Tests or directory is empty, skipping Allure report generation"; \
     fi
 
 # Final debug: Show the complete test-results structure
