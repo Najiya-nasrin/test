@@ -53,12 +53,38 @@ RUN reportgenerator \
     "-targetdir:/app/test-results/coverage-report" \
     "-reporttypes:Html" || true
 
-# Generate Allure report if allure-results directory exists
-RUN if [ -d "/app/allure-results" ]; then \
+# Debug: Check where allure results are actually generated
+RUN echo "=== Searching for allure-results directories ===" && \
+    find /app -name "allure-results" -type d 2>/dev/null || echo "No allure-results directories found"
+
+# Debug: List all directories that might contain allure results
+RUN echo "=== Contents of /app ===" && \
+    ls -la /app/ && \
+    echo "=== Contents of CardValidation.Tests ===" && \
+    ls -la /app/CardValidation.Tests/ 2>/dev/null || echo "CardValidation.Tests directory not found"
+
+# Copy allure results from wherever they are generated to a consistent location
+RUN mkdir -p /app/allure-results && \
+    find /app -name "allure-results" -type d -not -path "/app/allure-results" -exec cp -r {}/* /app/allure-results/ \; 2>/dev/null || \
+    echo "No allure-results found to copy"
+
+# Debug: Check if we now have allure results
+RUN echo "=== Final allure-results check ===" && \
+    ls -la /app/allure-results/ 2>/dev/null || echo "No allure-results in /app/allure-results/"
+
+# Generate Allure report if allure-results directory exists and has content
+RUN if [ -d "/app/allure-results" ] && [ "$(ls -A /app/allure-results 2>/dev/null)" ]; then \
+        echo "Generating Allure report from /app/allure-results"; \
         allure generate /app/allure-results --clean -o /app/test-results/allure-report; \
+        echo "Allure report generated successfully"; \
+        ls -la /app/test-results/allure-report/ || echo "Allure report directory is empty"; \
     else \
-        echo "No allure-results directory found, skipping Allure report generation"; \
+        echo "No allure-results found or directory is empty, skipping Allure report generation"; \
     fi
+
+# Final debug: Show the complete test-results structure
+RUN echo "=== Final test-results structure ===" && \
+    find /app/test-results -type f -name "*.html" 2>/dev/null || echo "No HTML files found in test-results"
 
 # Production build stage
 FROM build AS publish
