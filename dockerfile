@@ -20,12 +20,18 @@ FROM build AS test
 
 # Create test results directory
 RUN mkdir -p /app/test-results
+RUN mkdir -p /app/CardValidation.Tests/allure-results
 
-# Run all tests with coverage collection and TRX logging
+# Set Allure environment variables
+ENV ALLURE_RESULTS_DIRECTORY=/app/CardValidation.Tests/allure-results
+
+# Run all tests with coverage collection, TRX logging, and Allure reporting
 RUN dotnet test \
     --collect:"XPlat Code Coverage" \
     --logger "trx;LogFileName=all-tests.trx" \
-    --results-directory ./test-results
+    --results-directory ./test-results \
+    --environment ALLURE_RESULTS_DIRECTORY=/app/CardValidation.Tests/allure-results \
+    --verbosity normal
 
 # Production build stage
 FROM build AS publish
