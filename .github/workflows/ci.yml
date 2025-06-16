@@ -51,5 +51,5 @@ jobs:
     - name: Push to Docker Hub (Optional)
       if: success() && github.ref == 'refs/heads/main'
       run: |
-        docker tag card-validation-app your-dockerhub-username/card-validation-app:latest
-        docker push your-dockerhub-username/card-validation-app:latest
+        docker tag card-validation-app ${{ secrets.DOCKER_USERNAME }}/card-validation-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/card-validation-app:latest
