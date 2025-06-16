@@ -25,25 +25,20 @@ RUN mkdir -p /app/test-results
 RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Run unit tests with coverage and results output
-RUN dotnet test CardValidation.Tests \
-    --filter "FullyQualifiedName~UnitTests" \
-    --configuration Release \
-    --logger "trx;LogFileName=unit-tests.trx" \
-    --logger "console;verbosity=detailed" \
-    --results-directory /app/test-results \
-    --collect:"XPlat Code Coverage" \
-    --settings coverlet.runsettings || true
+# Run all tests with coverage collection (matching local setup exactly)
+RUN dotnet test --collect:"XPlat Code Coverage" --results-directory ./test-results
 
-# Run integration tests with results output
-RUN dotnet test CardValidation.Tests \
-    --filter "FullyQualifiedName~IntegrationTests" \
-    --configuration Release \
-    --logger "trx;LogFileName=integration-tests.trx" \
-    --logger "console;verbosity=detailed" \
-    --results-directory /app/test-results \
-    --collect:"XPlat Code Coverage" \
-    --settings coverlet.runsettings || true
+# Generate HTML coverage report (matching local setup exactly)
+RUN reportgenerator \
+    "-reports:test-results/*/coverage.cobertura.xml" \
+    "-targetdir:test-results/CoverageReport" \
+    "-reporttypes:Html" || true
+
+# Also generate TRX for GitHub Actions integration
+RUN dotnet test \
+    --logger "trx;LogFileName=all-tests.trx" \
+    --results-directory ./test-results \
+    --no-build || true
 
 # Generate HTML coverage report (optional)
 RUN reportgenerator \

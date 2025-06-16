@@ -39,18 +39,23 @@ jobs:
     - name: Display test summary
       if: always()
       run: |
-        echo "=== Unit Test Results ==="
-        if [ -f "test-results/unit-tests.trx" ]; then
-          echo "Unit tests completed"
-        else
-          echo "Unit test results not found"
-        fi
+        echo "=== Test Results Summary ==="
+        find test-results -name "*.trx" -exec echo "Found TRX: {}" \;
         
-        echo "=== Integration Test Results ==="
-        if [ -f "test-results/integration-tests.trx" ]; then
-          echo "Integration tests completed"
-        else
-          echo "Integration test results not found"
+        echo "=== Coverage Files ==="
+        find test-results -name "coverage.cobertura.xml" -exec echo "Coverage XML: {}" \;
+        find test-results -name "index.html" -exec echo "Coverage HTML: {}" \;
+        
+        echo "=== Coverage Report Structure ==="
+        ls -la test-results/CoverageReport/ 2>/dev/null || echo "No coverage report directory found"
+        
+        echo "=== Directory Structure ==="
+        ls -la test-results/ || echo "Test results directory not found"
+        
+        echo "=== Test Execution Summary ==="
+        if [ -f "test-results/all-tests.trx" ]; then
+          echo "Tests executed successfully"
+          grep -c "<UnitTestResult" test-results/all-tests.trx || echo "Could not count test results"
         fi
         
     - name: Upload test results
