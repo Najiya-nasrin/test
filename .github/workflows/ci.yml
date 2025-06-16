@@ -28,15 +28,42 @@ jobs:
 
     - name: Extract test results from test container image
       run: |
+        # Create a temporary container from the test image
         docker create --name test-runner card-validation-tests
+        # Copy test results (including coverage.xml and all-tests.trx)
         docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
+        # Copy Allure results
         docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
+        # Clean up the temporary container
         docker rm test-runner
+
+    - name: Install ReportGenerator
+      if: always()
+      run: |
+        # Install the .NET global tool for ReportGenerator
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        # Add the dotnet tools directory to the PATH for subsequent steps
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+    - name: Generate HTML Coverage Report
+      if: always()
+      run: |
+        mkdir -p unified-reports/coverage-report # Ensure target directory exists
+        # Check if coverage.xml exists before trying to generate the report
+        if [ -f "test-results/coverage.xml" ]; then
+          # Use reportgenerator to convert coverage.xml to HTML in the target directory
+          reportgenerator "-reports:test-results/coverage.xml" "-targetdir:unified-reports/coverage-report" "-reporttypes:HtmlInline_AzurePipelines;Badges"
+          echo "HTML coverage report generated in unified-reports/coverage-report"
+        else
+          echo "coverage.xml not found in test-results/ to generate HTML report."
+        fi
 
     - name: Load Allure Report history (safe)
       if: always()
       run: |
+        # Clone gh-pages branch to get previous Allure history
         git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages || echo "No gh-pages branch yet"
+        # Remove .git folder to avoid issues with simple-elf/allure-report-action
         rm -rf gh-pages/.git
 
     - name: Build Allure Report
@@ -65,15 +92,16 @@ jobs:
     - name: Prepare unified reports (for other artifacts)
       if: always()
       run: |
-        mkdir -p unified-reports
-
-        if [ -d "test-results/CoverageReport" ]; then
-          cp -r test-results/CoverageReport unified-reports/coverage-report
-          echo "Coverage report copied to unified-reports/coverage-report"
+        # The 'Generate HTML Coverage Report' step already created and populated
+        # unified-reports/coverage-report, so no need to copy from test-results anymore.
+        # Just confirm its presence if it was successfully generated.
+        if [ -d "unified-reports/coverage-report" ]; then
+          echo "Coverage report HTML output found in unified-reports/coverage-report"
         else
-          echo "Coverage report not found"
+          echo "Coverage report HTML output not found in unified-reports/coverage-report."
         fi
 
+        # Copy TRX file to unified-reports
         if [ -f "test-results/all-tests.trx" ]; then
           cp test-results/all-tests.trx unified-reports/
           echo "Test results (TRX) copied to unified-reports"
