@@ -26,7 +26,7 @@ RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 ENV PATH="$PATH:/root/.dotnet/tools"
 
 # Install Allure for test reporting
-RUN apt-get update && apt-get install -y openjdk-11-jre-headless wget
+RUN apt-get update && apt-get install -y openjdk-17-jre-headless wget
 RUN wget -O allure-commandline.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz && \
     tar -zxf allure-commandline.tgz -C /opt/ && \
     ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure && \
