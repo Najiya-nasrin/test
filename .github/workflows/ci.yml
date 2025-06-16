@@ -34,82 +34,78 @@ jobs:
         docker cp test-container:/app/allure-results ./allure-results || echo "No allure-results found"
         docker rm test-container
         
-        # List all results for debugging
-        echo "=== Test Results Directory ==="
-        ls -la test-results/ || echo "Test results directory not found"
+        # Create a unified reports directory
+        mkdir -p unified-reports
         
-        echo "=== Allure Results Directory ==="
-        ls -la allure-results/ || echo "Allure results directory not found"
-        
-        echo "=== Coverage Reports ==="
-        ls -la test-results/CoverageReport/ || echo "Coverage report directory not found"
-        
-    - name: Display test summary
-      if: always()
-      run: |
-        echo "=== Test Execution Summary ==="
-        if [ -f "test-results/all-tests.trx" ]; then
-          echo "✅ All tests completed - TRX file found"
-        else
-          echo "❌ Test results (TRX) not found"
-        fi
-        
-        echo "=== Coverage Report ==="
+        # Copy coverage report if it exists
         if [ -d "test-results/CoverageReport" ]; then
-          echo "✅ Coverage report generated successfully"
-          ls -la test-results/CoverageReport/ | head -5
+          cp -r test-results/CoverageReport unified-reports/coverage-report
+          echo "✅ Coverage report copied to unified-reports/coverage-report"
         else
           echo "❌ Coverage report not found"
         fi
         
-        echo "=== Allure Report ==="
+        # Copy allure report if it exists
         if [ -d "test-results/allure-report" ]; then
-          echo "✅ Allure report generated successfully"
-          ls -la test-results/allure-report/ | head -5
+          cp -r test-results/allure-report unified-reports/allure-report
+          echo "✅ Allure report copied to unified-reports/allure-report"
         else
           echo "❌ Allure report not found"
         fi
         
-        echo "=== Raw Allure Results ==="
-        if [ -d "allure-results" ]; then
-          echo "✅ Allure raw results found"
-          ls -la allure-results/ | head -5
-        else
-          echo "❌ Allure raw results not found"
+        # Copy raw test results for reference
+        if [ -f "test-results/all-tests.trx" ]; then
+          cp test-results/all-tests.trx unified-reports/
+          echo "✅ Test results (TRX) copied to unified-reports"
         fi
         
-    - name: Upload test results and coverage
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results-and-coverage
-        path: |
-          test-results/
-          allure-results/
-        if-no-files-found: warn
+        # Copy raw allure results if they exist
+        if [ -d "allure-results" ]; then
+          cp -r allure-results unified-reports/allure-raw-results
+          echo "✅ Raw allure results copied to unified-reports/allure-raw-results"
+        fi
         
-    - name: Upload Coverage Report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: test-results/CoverageReport/
-        if-no-files-found: warn
+        # Display final structure
+        echo "=== Final Unified Reports Structure ==="
+        ls -la unified-reports/ || echo "Unified reports directory is empty"
         
-    - name: Upload Allure Report
+    - name: Display test summary
       if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: test-results/allure-report/
-        if-no-files-found: warn
+      run: |
+        echo "=== Unified Reports Summary ==="
         
-    - name: Upload Raw Allure Results
+        if [ -d "unified-reports/coverage-report" ]; then
+          echo "✅ Coverage Report: unified-reports/coverage-report/index.html"
+          ls -la unified-reports/coverage-report/ | head -3
+        else
+          echo "❌ Coverage report not found in unified reports"
+        fi
+        
+        if [ -d "unified-reports/allure-report" ]; then
+          echo "✅ Allure Report: unified-reports/allure-report/index.html"
+          ls -la unified-reports/allure-report/ | head -3
+        else
+          echo "❌ Allure report not found in unified reports"
+        fi
+        
+        if [ -f "unified-reports/all-tests.trx" ]; then
+          echo "✅ Test Results: unified-reports/all-tests.trx"
+        else
+          echo "❌ Test results (TRX) not found in unified reports"
+        fi
+        
+        if [ -d "unified-reports/allure-raw-results" ]; then
+          echo "✅ Raw Allure Data: unified-reports/allure-raw-results/"
+        else
+          echo "❌ Raw allure results not found in unified reports"
+        fi
+        
+    - name: Upload unified test reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: allure-raw-results
-        path: allure-results/
+        name: test-reports
+        path: unified-reports/
         if-no-files-found: warn
         
     - name: Build production image
