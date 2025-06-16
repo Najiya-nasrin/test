@@ -22,56 +22,75 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    # Ensure unified-reports directory exists early and is clean
+    - name: Prepare unified reports directory
+      run: |
+        rm -rf unified-reports # Clean up any previous runs
+        mkdir -p unified-reports
+        echo "Created unified-reports directory."
+        ls -la unified-reports/ # Verify it's created and empty
+
     - name: Build test image (runs tests in Dockerfile)
       run: |
         docker build --target test -t card-validation-tests .
 
     - name: Extract test results from test container image
       run: |
-        # Create a temporary container from the test image
         docker create --name test-runner card-validation-tests
-        # Copy test results (including coverage.xml and all-tests.trx)
-        docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
+
+        # --- DEBUG: Verify contents INSIDE the Docker container BEFORE copying ---
+        echo "--- Contents of /app/test-results inside the Docker container: ---"
+        docker exec test-runner ls -la /app/test-results || echo "  /app/test-results not found or empty in container."
+        echo "---------------------------------------------------------------------"
+
+        # Copy test results (including coverage.xml and all-tests.trx) from container to runner
+        docker cp test-runner:/app/test-results ./test-results || echo "Failed to copy test-results from container. Source might be empty or missing."
+
         # Copy Allure results
-        docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
-        # Clean up the temporary container
+        docker cp test-runner:/app/allure-results ./allure-results || echo "Failed to copy allure-results from container. Source might be empty or missing."
+
         docker rm test-runner
+
+        # --- DEBUG: Verify contents on the RUNNER AFTER copying ---
+        echo "--- Contents of ./test-results on the GitHub Actions runner: ---"
+        ls -la ./test-results || echo "  ./test-results not found or empty on runner."
+        echo "---------------------------------------------------------------------"
 
     - name: Install ReportGenerator
       if: always()
       run: |
-        # Install the .NET global tool for ReportGenerator
         dotnet tool install -g dotnet-reportgenerator-globaltool
-        # Add the dotnet tools directory to the PATH for subsequent steps
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH # Add tools to PATH for subsequent steps
 
-    - name: Generate coverage report
-      run: |        
-        # Look for 'coverage.xml' directly
+    - name: Generate HTML Coverage Report
+      if: always()
+      run: |
+        # --- DEBUG: Verify coverage.xml exists JUST BEFORE reportgenerator runs ---
+        echo "--- Verifying coverage.xml before ReportGenerator: ---"
+        ls -la test-results/coverage.xml || echo "  coverage.xml not directly found here."
+        echo "----------------------------------------------------"
+
         if [ -f "test-results/coverage.xml" ]; then
           reportgenerator \
             -reports:"test-results/coverage.xml" \
-            -targetdir:"test-results/coverage-report" \
+            -targetdir:"unified-reports/coverage-report" \
             -reporttypes:"Html;JsonSummary" \
             -verbosity:Warning
-          echo "Coverage report generated successfully"
-          
-          if [ -f "test-results/coverage-report/Summary.json" ]; then
-            echo "Coverage Summary:"
-            cat test-results/coverage-report/Summary.json
-          fi
+          echo "✅ HTML Coverage report generated successfully in unified-reports/coverage-report"
         else
-          echo "No coverage files (coverage.xml) found in test-results/."
-          echo "Contents of test-results/:"
-          ls -la test-results/ || echo "  test-results directory not found or empty."
+          echo "⚠️ coverage.xml not found in test-results/ to generate HTML report."
+          echo "Please check the Dockerfile's test stage and the 'docker cp' command."
+        fi
+
+        if [ -f "unified-reports/coverage-report/Summary.json" ]; then
+          echo "📊 Coverage Summary:"
+          cat unified-reports/coverage-report/Summary.json
         fi
 
     - name: Load Allure Report history (safe)
       if: always()
       run: |
-        # Clone gh-pages branch to get previous Allure history
         git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages || echo "No gh-pages branch yet"
-        # Remove .git folder to avoid issues with simple-elf/allure-report-action
         rm -rf gh-pages/.git
 
     - name: Build Allure Report
@@ -100,23 +119,22 @@ jobs:
     - name: Prepare unified reports (for other artifacts)
       if: always()
       run: |
-        # The 'Generate HTML Coverage Report' step already created and populated
-        # unified-reports/coverage-report, so no need to copy from test-results anymore.
-        # Just confirm its presence if it was successfully generated.
-        if [ -d "unified-reports/coverage-report" ]; then
-          echo "Coverage report HTML output found in unified-reports/coverage-report"
-        else
-          echo "Coverage report HTML output not found in unified-reports/coverage-report."
-        fi
+        # The 'Generate HTML Coverage Report' step already handles populating
+        # unified-reports/coverage-report. This step now only copies the TRX.
+        # It's critical that 'unified-reports' exists as a directory (handled earlier).
 
         # Copy TRX file to unified-reports
         if [ -f "test-results/all-tests.trx" ]; then
-          cp test-results/all-tests.trx unified-reports/
+          cp "test-results/all-tests.trx" "unified-reports/" # Explicitly copy into the directory
           echo "Test results (TRX) copied to unified-reports"
+        else
+          echo "TRX file (all-tests.trx) not found in test-results/."
         fi
 
         echo "=== Final Unified Reports Structure ==="
         ls -la unified-reports/ || echo "Unified reports directory is empty"
+        ls -la unified-reports/coverage-report/ || echo "Unified reports coverage-report directory is empty."
+
 
     - name: Upload unified test reports
       if: always()
