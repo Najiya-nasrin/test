@@ -65,12 +65,15 @@ jobs:
           mkdir -p coverage-report
           echo "<html><body><h1>No Coverage Data Found</h1><p>Coverage data was not generated during test execution.</p></body></html>" > coverage-report/index.html
         fi
+        
     - name: Set up Java for Allure
       if: always()
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
+        
+    - name: Install Allure
       if: always()
       run: |
         wget -O allure-commandline.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
@@ -162,7 +165,7 @@ jobs:
           echo "❌ Raw allure results not found in unified reports"
         fi
         
-    - name: Upload unified test reports
+    - name: Upload test reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
