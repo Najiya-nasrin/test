@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -6,189 +6,115 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  DOCKER_IMAGE_NAME: card-validation-app
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Build and Test
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-      
-    - name: Build test image
-      run: |
-        docker build --target test -t card-validation-tests .
-        
-    - name: Extract test results
-      if: always()
-      run: |
-        # Create container and copy test results
-        docker create --name test-container card-validation-tests
-        docker cp test-container:/app/test-results ./test-results || echo "No test-results found"
-        
-        # Copy allure raw results from the tests project directory
-        docker cp test-container:/app/CardValidation.Tests/allure-results ./allure-results || echo "No allure-results found"
-        
-        docker rm test-container
-        
-    - name: Set up .NET
-      if: always()
-      uses: actions/setup-dotnet@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
-    - name: Install ReportGenerator tool
-      if: always()
+    
+    - name: Restore dependencies
+      run: dotnet restore CardValidation.sln
+    
+    - name: Build solution
+      run: dotnet build CardValidation.sln --configuration Release --no-restore
+    
+    - name: Run tests
       run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-        echo "/home/runner/.dotnet/tools" >> $GITHUB_PATH
-        
-    - name: Generate coverage report
-      if: always()
+        dotnet test CardValidation.sln \
+          --configuration Release \
+          --no-build \
+          --verbosity normal \
+          --logger trx \
+          --results-directory TestResults \
+          --collect:"XPlat Code Coverage"
+      env:
+        ASPNETCORE_ENVIRONMENT: Testing
+    
+    - name: Install Allure CLI
       run: |
-        if [ -f test-results/*/coverage.cobertura.xml ]; then
-          echo "Generating coverage report from test-results"
-          reportgenerator \
-            "-reports:test-results/*/coverage.cobertura.xml" \
-            "-targetdir:coverage-report" \
-            "-reporttypes:Html"
-          echo "✅ Coverage report generated successfully"
-          ls -la coverage-report/ || echo "Coverage report directory is empty"
-        else
-          echo "⚠️ No coverage files found, skipping coverage report generation"
-          mkdir -p coverage-report
-          echo "<html><body><h1>No Coverage Data Found</h1><p>Coverage data was not generated during test execution.</p></body></html>" > coverage-report/index.html
-        fi
-        
-    - name: Set up Java for Allure
-      if: always()
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        
-    - name: Install Allure
-      if: always()
-      run: |
-        wget -O allure-commandline.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
-        sudo tar -zxf allure-commandline.tgz -C /opt/
-        sudo ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure
-        rm allure-commandline.tgz
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq openjdk-11-jre-headless
+        wget -q -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+        tar -xzf allure.tgz
+        sudo mv allure-2.24.0 /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
         allure --version
-        
+    
     - name: Generate Allure report
-      if: always()
       run: |
-        if [ -d "allure-results" ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
-          echo "Generating Allure report from allure-results"
-          allure generate allure-results --clean -o allure-report
-          echo "✅ Allure report generated successfully"
-          ls -la allure-report/ || echo "Allure report directory is empty"
+        cd CardValidation.Tests
+        if [ -d "allure-results" ] && [ "$(find allure-results -name "*.json" | wc -l)" -gt 0 ]; then
+          allure generate allure-results --clean -o ../TestResults/allure-report --single-file
+          echo "Allure report generated successfully"
         else
-          echo "⚠️ No allure-results found or directory is empty, skipping Allure report generation"
-          mkdir -p allure-report
-          echo "<html><body><h1>No Allure Results Found</h1><p>Allure results were not generated during test execution.</p></body></html>" > allure-report/index.html
+          echo "No Allure results found - skipping report generation"
+          mkdir -p ../TestResults/allure-report
+          echo "<h1>No Allure Results Found</h1><p>Tests ran but no Allure data was generated.</p>" > ../TestResults/allure-report/index.html
         fi
-        
-    - name: Create unified reports
-      if: always()
+    
+    - name: Generate coverage report
       run: |
-        # Create a unified reports directory
-        mkdir -p unified-reports
+        dotnet tool install -g dotnet-reportgenerator-globaltool
         
-        # Copy coverage report
-        if [ -d "coverage-report" ]; then
-          cp -r coverage-report unified-reports/coverage-report
-          echo "✅ Coverage report copied to unified-reports/coverage-report"
+        if find TestResults -name "coverage.cobertura.xml" -type f | grep -q .; then
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"TestResults/coverage-report" \
+            -reporttypes:"Html;JsonSummary" \
+            -verbosity:Warning
+          echo "Coverage report generated successfully"
+          
+          if [ -f "TestResults/coverage-report/Summary.json" ]; then
+            echo "Coverage Summary:"
+            cat TestResults/coverage-report/Summary.json
+          fi
         else
-          echo "❌ Coverage report not found"
+          echo "No coverage files found"
         fi
-        
-        # Copy allure report
-        if [ -d "allure-report" ]; then
-          cp -r allure-report unified-reports/allure-report
-          echo "✅ Allure report copied to unified-reports/allure-report"
-        else
-          echo "❌ Allure report not found"
-        fi
-        
-        # Copy raw test results for reference
-        if [ -f "test-results/all-tests.trx" ]; then
-          cp test-results/all-tests.trx unified-reports/
-          echo "✅ Test results (TRX) copied to unified-reports"
-        fi
-        
-        # Copy raw allure results if they exist
-        if [ -d "allure-results" ]; then
-          cp -r allure-results unified-reports/allure-raw-results
-          echo "✅ Raw allure results copied to unified-reports/allure-raw-results"
-        fi
-        
-        # Display final structure
-        echo "=== Final Unified Reports Structure ==="
-        ls -la unified-reports/ || echo "Unified reports directory is empty"
-        
-    - name: Display test summary
-      if: always()
-      run: |
-        echo "=== Unified Reports Summary ==="
-        
-        if [ -d "unified-reports/coverage-report" ]; then
-          echo "✅ Coverage Report: unified-reports/coverage-report/index.html"
-          ls -la unified-reports/coverage-report/ | head -3
-        else
-          echo "❌ Coverage report not found in unified reports"
-        fi
-        
-        if [ -d "unified-reports/allure-report" ]; then
-          echo "✅ Allure Report: unified-reports/allure-report/index.html"
-          ls -la unified-reports/allure-report/ | head -3
-        else
-          echo "❌ Allure report not found in unified reports"
-        fi
-        
-        if [ -f "unified-reports/all-tests.trx" ]; then
-          echo "✅ Test Results: unified-reports/all-tests.trx"
-        else
-          echo "❌ Test results (TRX) not found in unified reports"
-        fi
-        
-        if [ -d "unified-reports/allure-raw-results" ]; then
-          echo "✅ Raw Allure Data: unified-reports/allure-raw-results/"
-        else
-          echo "❌ Raw allure results not found in unified reports"
-        fi
-        
-    - name: Upload test reports
-      if: always()
+    
+    - name: Upload test artifacts
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: test-reports
-        path: unified-reports/
-        if-no-files-found: warn
-        
-    - name: Build production image
-      if: success()
-      run: |
-        docker build --target runtime -t ${{ env.DOCKER_IMAGE_NAME }} .
-        
+        name: test-results-and-reports
+        path: |
+          TestResults/allure-report/
+          TestResults/coverage-report/
+        retention-days: 30
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        directory: TestResults
+        fail_ci_if_error: false
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Only build Docker on push, not PR
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
     - name: Login to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        
-    - name: Push to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
+    
+    - name: Build and push Docker image
       run: |
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+        docker build -t najiya123/cardvalidation-app:latest -t najiya123/cardvalidation-app:${{ github.sha }} .
+        docker push najiya123/cardvalidation-app:latest
+        docker push najiya123/cardvalidation-app:${{ github.sha }}
