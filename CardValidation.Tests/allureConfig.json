@@ -1,6 +1,6 @@
 {
   "allure": {
-    "directory": "allure-results"
+    "directory": "../../../allure-results"
   },
   "specflow": {
     "stepArguments": {
