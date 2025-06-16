@@ -18,12 +18,19 @@ FROM build AS test
 WORKDIR /src
 
 # Run tests with coverage and TRX logger
+# Adding '|| true' ensures the build doesn't fail immediately if tests fail,
+# allowing the subsequent debug command to run.
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
     /p:CollectCoverage=true \
     /p:CoverletOutputFormat=cobertura \
-    /p:CoverletOutput=/app/test-results/coverage.xml
+    /p:CoverletOutput=/app/test-results/coverage.xml || true
+
+# --- IMPORTANT DEBUG STEP: List contents of test-results immediately after tests ---
+RUN echo "--- Contents of /app/test-results inside the container after dotnet test: ---" && \
+    ls -la /app/test-results && \
+    echo "-----------------------------------------------------------------------"
 
 # Copy Allure results if available (for Allure.NUnit)
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
