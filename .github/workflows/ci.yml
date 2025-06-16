@@ -25,6 +25,12 @@ jobs:
     - name: Build solution
       run: dotnet build CardValidation.sln --configuration Release --no-restore
     
+    - name: Clean previous test results
+      run: |
+        rm -rf CardValidation.Tests/allure-results
+        rm -rf TestResults/allure-report
+        echo "✅ Cleaned previous Allure results and reports"
+    
     - name: Run tests
       run: |
         dotnet test CardValidation.sln \
@@ -89,14 +95,7 @@ jobs:
           TestResults/coverage-report/
         retention-days: 30
     
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      if: always()
-      with:
-        directory: TestResults
-        fail_ci_if_error: false
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
 
   docker-build:
     needs: test
@@ -115,6 +114,6 @@ jobs:
     
     - name: Build and push Docker image
       run: |
-        docker build -t najiya123/cardvalidation-app:latest -t najiya123/cardvalidation-app:${{ github.sha }} .
-        docker push najiya123/cardvalidation-app:latest
-        docker push najiya123/cardvalidation-app:${{ github.sha }}
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }} .
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }}
