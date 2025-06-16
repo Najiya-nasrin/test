@@ -52,9 +52,9 @@ jobs:
         cd CardValidation.Tests
         if [ -d "allure-results" ] && [ "$(find allure-results -name "*.json" | wc -l)" -gt 0 ]; then
           allure generate allure-results --clean -o ../TestResults/allure-report --single-file
-          echo "Allure report generated successfully"
+          echo "✅ Allure report generated successfully"
         else
-          echo "No Allure results found - skipping report generation"
+          echo "⚠️ No Allure results found - skipping report generation"
           mkdir -p ../TestResults/allure-report
           echo "<h1>No Allure Results Found</h1><p>Tests ran but no Allure data was generated.</p>" > ../TestResults/allure-report/index.html
         fi
@@ -69,14 +69,14 @@ jobs:
             -targetdir:"TestResults/coverage-report" \
             -reporttypes:"Html;JsonSummary" \
             -verbosity:Warning
-          echo "Coverage report generated successfully"
+          echo "✅ Coverage report generated successfully"
           
           if [ -f "TestResults/coverage-report/Summary.json" ]; then
-            echo "Coverage Summary:"
+            echo "📊 Coverage Summary:"
             cat TestResults/coverage-report/Summary.json
           fi
         else
-          echo "No coverage files found"
+          echo "⚠️ No coverage files found"
         fi
     
     - name: Upload test artifacts
