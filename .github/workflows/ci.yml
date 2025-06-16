@@ -45,17 +45,29 @@ jobs:
         # Add the dotnet tools directory to the PATH for subsequent steps
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-    - name: Generate HTML Coverage Report
-      if: always()
+    - name: Generate coverage report
       run: |
-        mkdir -p unified-reports/coverage-report # Ensure target directory exists
-        # Check if coverage.xml exists before trying to generate the report
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        # Ensure the dotnet tools directory is in the PATH for the current session
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        
+        # Look for 'coverage.xml' directly
         if [ -f "test-results/coverage.xml" ]; then
-          # Use reportgenerator to convert coverage.xml to HTML in the target directory
-          reportgenerator "-reports:test-results/coverage.xml" "-targetdir:unified-reports/coverage-report" "-reporttypes:HtmlInline_AzurePipelines;Badges"
-          echo "HTML coverage report generated in unified-reports/coverage-report"
+          reportgenerator \
+            -reports:"test-results/coverage.xml" \
+            -targetdir:"test-results/coverage-report" \
+            -reporttypes:"Html;JsonSummary" \
+            -verbosity:Warning
+          echo "Coverage report generated successfully"
+          
+          if [ -f "test-results/coverage-report/Summary.json" ]; then
+            echo "Coverage Summary:"
+            cat test-results/coverage-report/Summary.json
+          fi
         else
-          echo "coverage.xml not found in test-results/ to generate HTML report."
+          echo "No coverage files (coverage.xml) found in test-results/."
+          echo "Contents of test-results/:"
+          ls -la test-results/ || echo "  test-results directory not found or empty."
         fi
 
     - name: Load Allure Report history (safe)
