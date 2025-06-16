@@ -1,109 +1,109 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+push:
+  branches: [ main, develop ]
+pull_request:
+  branches: [ main ]
 
 env:
-  DOCKER_IMAGE_NAME: card-validation-app
-  ALLURE_HISTORY_PATH: allure-history # Define a path for Allure history
+DOCKER_IMAGE_NAME: card-validation-app
+ALLURE_HISTORY_PATH: allure-history # Define a path for Allure history
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    name: Build and Test
+test:
+  runs-on: ubuntu-latest
+  name: Build and Test
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  steps:
+  - name: Checkout code
+    uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
 
-    - name: Build test image
-      run: |
-        docker build --target test -t card-validation-tests .
+  - name: Build test image
+    run: |
+      docker build -t card-validation-tests .
 
-    - name: Run tests and collect results
-      run: |
-        docker run --name test-runner card-validation-tests
-        docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
-        docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
-        docker rm test-runner
+  - name: Run tests and collect results
+    run: |
+      docker run --name test-runner card-validation-tests
+      docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
+      docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
+      docker rm test-runner
 
-    - name: Load Allure Report history
-      uses: actions/checkout@v4 # Use v4 for consistency
-      if: always()
-      continue-on-error: true
-      with:
-        ref: gh-pages
-        path: gh-pages
+  - name: Load Allure Report history
+    uses: actions/checkout@v4 # Use v4 for consistency
+    if: always()
+    continue-on-error: true
+    with:
+      ref: gh-pages
+      path: gh-pages
 
-    - name: Build Allure Report
-      uses: simple-elf/allure-report-action@v1.7
-      if: always()
-      with:
-        gh_pages: gh-pages
-        allure_history: ${{ env.ALLURE_HISTORY_PATH }}
-        allure_results: allure-results # Use the collected allure-results directly
+  - name: Build Allure Report
+    uses: simple-elf/allure-report-action@v1.7
+    if: always()
+    with:
+      gh_pages: gh-pages
+      allure_history: ${{ env.ALLURE_HISTORY_PATH }}
+      allure_results: allure-results # Use the collected allure-results directly
 
-    - name: Publish Allure Report
-      uses: peaceiris/actions-gh-pages@v3
-      if: always()
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages
-        publish_dir: ${{ env.ALLURE_HISTORY_PATH }}
+  - name: Publish Allure Report
+    uses: peaceiris/actions-gh-pages@v3
+    if: always()
+    with:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      publish_branch: gh-pages
+      publish_dir: ${{ env.ALLURE_HISTORY_PATH }}
 
-    - name: Prepare unified reports (for other artifacts)
-      if: always()
-      run: |
-        mkdir -p unified-reports
+  - name: Prepare unified reports (for other artifacts)
+    if: always()
+    run: |
+      mkdir -p unified-reports
 
-        # Copy coverage report if it exists
-        if [ -d "test-results/CoverageReport" ]; then
-          cp -r test-results/CoverageReport unified-reports/coverage-report
-          echo "Coverage report copied to unified-reports/coverage-report"
-        else
-          echo "Coverage report not found"
-        fi
+      # Copy coverage report if it exists
+      if [ -d "test-results/CoverageReport" ]; then
+        cp -r test-results/CoverageReport unified-reports/coverage-report
+        echo "Coverage report copied to unified-reports/coverage-report"
+      else
+        echo "Coverage report not found"
+      fi
 
-        # Copy raw test results for reference
-        if [ -f "test-results/all-tests.trx" ]; then
-          cp test-results/all-tests.trx unified-reports/
-          echo "Test results (TRX) copied to unified-reports"
-        fi
+      # Copy raw test results for reference
+      if [ -f "test-results/all-tests.trx" ]; then
+        cp test-results/all-tests.trx unified-reports/
+        echo "Test results (TRX) copied to unified-reports"
+      fi
 
-        # Display final structure
-        echo "=== Final Unified Reports Structure ==="
-        ls -la unified-reports/ || echo "Unified reports directory is empty"
+      # Display final structure
+      echo "=== Final Unified Reports Structure ==="
+      ls -la unified-reports/ || echo "Unified reports directory is empty"
 
-    - name: Upload unified test reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: other-test-reports
-        path: unified-reports/
-        if-no-files-found: warn
+  - name: Upload unified test reports
+    if: always()
+    uses: actions/upload-artifact@v4
+    with:
+      name: other-test-reports
+      path: unified-reports/
+      if-no-files-found: warn
 
-    - name: Build production image
-      if: success()
-      run: |
-        docker build --target runtime -t ${{ env.DOCKER_IMAGE_NAME }} .
+  - name: Build production image
+    if: success()
+    run: |
+      docker build --target runtime -t ${{ env.DOCKER_IMAGE_NAME }} .
 
-    - name: Login to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+  - name: Login to Docker Hub
+    if: success() && github.ref == 'refs/heads/main'
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Push to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
-      run: |
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  - name: Push to Docker Hub
+    if: success() && github.ref == 'refs/heads/main'
+    run: |
+      docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+      docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+      docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+      docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
