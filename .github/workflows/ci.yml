@@ -46,11 +46,7 @@ jobs:
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
     - name: Generate coverage report
-      run: |
-        dotnet tool install -g dotnet-reportgenerator-globaltool
-        # Ensure the dotnet tools directory is in the PATH for the current session
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-        
+      run: |        
         # Look for 'coverage.xml' directly
         if [ -f "test-results/coverage.xml" ]; then
           reportgenerator \
