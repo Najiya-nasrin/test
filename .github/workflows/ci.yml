@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: card-validation-app
-  ALLURE_HISTORY_PATH: allure-history # Define a path for Allure history
+  ALLURE_HISTORY_PATH: allure-history
 
 jobs:
   test:
@@ -22,19 +22,19 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build test image
+    - name: Build test image (runs tests in Dockerfile)
       run: |
-        docker build -t card-validation-tests .
+        docker build --target test -t card-validation-tests .
 
-    - name: Run tests and collect results
+    - name: Extract test results from test container image
       run: |
-        docker run --name test-runner card-validation-tests
+        docker create --name test-runner card-validation-tests
         docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
         docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
         docker rm test-runner
 
     - name: Load Allure Report history
-      uses: actions/checkout@v4 # Use v4 for consistency
+      uses: actions/checkout@v4
       if: always()
       continue-on-error: true
       with:
@@ -47,7 +47,7 @@ jobs:
       with:
         gh_pages: gh-pages
         allure_history: ${{ env.ALLURE_HISTORY_PATH }}
-        allure_results: allure-results # Use the collected allure-results directly
+        allure_results: allure-results
 
     - name: Publish Allure Report
       uses: peaceiris/actions-gh-pages@v3
@@ -62,7 +62,6 @@ jobs:
       run: |
         mkdir -p unified-reports
 
-        # Copy coverage report if it exists
         if [ -d "test-results/CoverageReport" ]; then
           cp -r test-results/CoverageReport unified-reports/coverage-report
           echo "Coverage report copied to unified-reports/coverage-report"
@@ -70,13 +69,11 @@ jobs:
           echo "Coverage report not found"
         fi
 
-        # Copy raw test results for reference
         if [ -f "test-results/all-tests.trx" ]; then
           cp test-results/all-tests.trx unified-reports/
           echo "Test results (TRX) copied to unified-reports"
         fi
 
-        # Display final structure
         echo "=== Final Unified Reports Structure ==="
         ls -la unified-reports/ || echo "Unified reports directory is empty"
 
