@@ -15,6 +15,9 @@ RUN dotnet publish CardValidation.Web/CardValidation.Web.csproj -c Release -o /a
 FROM build AS test
 WORKDIR /src
 
+# Ensure test-results exists
+RUN mkdir -p /app/test-results /app/allure-results
+
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
@@ -24,20 +27,13 @@ RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     /p:CoverletVerbosity=detailed \
     "/p:CoverletInclude=CardValidation.Core*,CardValidation.Web*" || true
 
-# Copy Allure results if present
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
-      cp -r CardValidation.Tests/allure-results /app/allure-results; \
-    else \
-      mkdir -p /app/allure-results; \
+      cp -r CardValidation.Tests/allure-results/* /app/allure-results/; \
     fi
-
-# Ensure test-results dir exists to avoid runtime errors
-RUN mkdir -p /app/test-results
 
 # --- Stage 3: Final Runtime ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "CardValidation.Web.dll"]

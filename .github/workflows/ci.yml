@@ -47,14 +47,14 @@ jobs:
     - name: Generate HTML Coverage Report
       if: always()
       run: |
-        # Changed to look for 'coverage.xml' directly in 'test-results/'
+        # Generate HTML + JSON summary report if coverage exists
         if [ -f "test-results/coverage.xml" ]; then
           reportgenerator \
-            "-reports:test-results/coverage.xml" \ # Corrected filename
+            "-reports:test-results/coverage.xml" \
             "-targetdir:unified-reports/coverage-report" \
             "-reporttypes:Html;JsonSummary" \
             "-sourcedirs:./CardValidation.Core;./CardValidation.Web" \
-            -verbosity:Warning
+            "-verbosity:Warning"
         else
           mkdir -p unified-reports/coverage-report
           echo "<html><body><h1>No Coverage Data Found</h1><p>Coverage data was not generated during test execution, or the expected XML file (coverage.xml) was not found.</p></body></html>" > unified-reports/coverage-report/index.html
