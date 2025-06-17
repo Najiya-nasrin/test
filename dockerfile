@@ -39,7 +39,7 @@ RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     /p:CoverletOutputFormat=cobertura \
     /p:CoverletOutput=/app/test-results/coverage.xml \
     /p:CoverletVerbosity=detailed \
-    "/p:CoverletInclude=[CardValidation.Core]*,[CardValidation.Web]*" || true # Corrected syntax: single quoted argument with comma separator
+    "/p:CoverletInclude=CardValidation.Core*,CardValidation.Web*" || true # Refined syntax: removed square brackets
 
 # --- IMPORTANT DEBUG STEP: List contents of test-results immediately after tests ---
 # This command runs during the Docker build process and prints the contents of the
