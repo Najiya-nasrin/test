@@ -39,7 +39,15 @@ RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     /p:CoverletOutputFormat=cobertura \
     /p:CoverletOutput=/app/test-results/coverage.xml \
     /p:CoverletVerbosity=detailed \
-    /p:CoverletInclude="[CardValidation.Core]*,[CardValidation.Web]*" || true # Explicitly include these assemblies for coverage.
+    /p:CoverletInclude="[CardValidation.Core]*,[CardValidation.Web]*" || true # Runs unit tests and collects detailed code coverage.
+
+# --- IMPORTANT DEBUG STEP: List contents of test-results immediately after tests ---
+# This command runs during the Docker build process and prints the contents of the
+# /app/test-results directory. This is CRUCIAL for verifying if coverage.xml and
+# all-tests.trx are created and where they are located within the container.
+RUN echo "--- Contents of /app/test-results inside the container after dotnet test: ---" && \
+    ls -la /app/test-results && \
+    echo "-----------------------------------------------------------------------"
 
 # Copy Allure results.
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
