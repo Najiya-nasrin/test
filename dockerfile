@@ -46,9 +46,9 @@ RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
 # This command runs during the Docker build process and prints the contents of the
 # /app/test-results directory. This is CRUCIAL for verifying if coverage.xml and
 # all-tests.trx are created and where they are located within the container.
-RUN echo "--- Contents of /app/test-results inside the container after dotnet test: ---" && \
-    ls -la /app/test-results && \
-    echo "-----------------------------------------------------------------------"
+#RUN echo "--- Contents of /app/test-results inside the container after dotnet test: ---" && \
+#   ls -la /app/test-results && \
+#  echo "-----------------------------------------------------------------------"
 
 # Copy Allure results.
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
