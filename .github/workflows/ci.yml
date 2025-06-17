@@ -25,6 +25,12 @@ jobs:
     - name: Build solution
       run: dotnet build CardValidation.sln --configuration Release --no-restore
     
+    - name: Clean previous test results
+      run: |
+        rm -rf CardValidation.Tests/allure-results
+        rm -rf TestResults/allure-report
+        echo "✅ Cleaned previous Allure results and reports"
+    
     - name: Run tests
       run: |
         dotnet test CardValidation.sln \
@@ -52,9 +58,9 @@ jobs:
         cd CardValidation.Tests
         if [ -d "allure-results" ] && [ "$(find allure-results -name "*.json" | wc -l)" -gt 0 ]; then
           allure generate allure-results --clean -o ../TestResults/allure-report --single-file
-          echo "Allure report generated successfully"
+          echo "✅ Allure report generated successfully"
         else
-          echo "No Allure results found - skipping report generation"
+          echo "⚠️ No Allure results found - skipping report generation"
           mkdir -p ../TestResults/allure-report
           echo "<h1>No Allure Results Found</h1><p>Tests ran but no Allure data was generated.</p>" > ../TestResults/allure-report/index.html
         fi
@@ -69,14 +75,14 @@ jobs:
             -targetdir:"TestResults/coverage-report" \
             -reporttypes:"Html;JsonSummary" \
             -verbosity:Warning
-          echo "Coverage report generated successfully"
+          echo "✅ Coverage report generated successfully"
           
           if [ -f "TestResults/coverage-report/Summary.json" ]; then
-            echo "Coverage Summary:"
+            echo "📊 Coverage Summary:"
             cat TestResults/coverage-report/Summary.json
           fi
         else
-          echo "No coverage files found"
+          echo "⚠️ No coverage files found"
         fi
     
     - name: Upload test artifacts
@@ -89,14 +95,7 @@ jobs:
           TestResults/coverage-report/
         retention-days: 30
     
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      if: always()
-      with:
-        directory: TestResults
-        fail_ci_if_error: false
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
 
   docker-build:
     needs: test
@@ -115,6 +114,6 @@ jobs:
     
     - name: Build and push Docker image
       run: |
-        docker build -t najiya123/cardvalidation-app:latest -t najiya123/cardvalidation-app:${{ github.sha }} .
-        docker push najiya123/cardvalidation-app:latest
-        docker push najiya123/cardvalidation-app:${{ github.sha }}
+        docker build --target runtime -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }} .
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }}
