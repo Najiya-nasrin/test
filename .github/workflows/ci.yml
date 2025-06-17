@@ -22,13 +22,10 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # Prepare unified-reports directory early and ensure it's clean for all artifacts
     - name: Prepare unified reports directory
       run: |
-        rm -rf unified-reports # Clean up any previous runs
+        rm -rf unified-reports
         mkdir -p unified-reports
-        echo "Created unified-reports directory."
-        ls -la unified-reports/ # Verify it's created and empty
 
     - name: Build test image (runs tests in Dockerfile)
       run: |
@@ -37,57 +34,30 @@ jobs:
     - name: Extract test results from test container image
       run: |
         docker create --name test-runner card-validation-tests
-
-        # DEBUG: Verify contents INSIDE the Docker container BEFORE copying
-        echo "--- Contents of /app/test-results inside the Docker container: ---"
-        docker exec test-runner ls -la /app/test-results || echo "  /app/test-results not found or empty in container."
-        echo "---------------------------------------------------------------------"
-
-        # Copy test results (including coverage.xml/cobertura.xml and all-tests.trx) from container to runner
-        # This will create ./test-results on the runner
-        docker cp test-runner:/app/test-results ./test-results || echo "Failed to copy test-results from container. Source might be empty or missing."
-
-        # Copy Allure results
-        docker cp test-runner:/app/allure-results ./allure-results || echo "Failed to copy allure-results from container. Source might be empty or missing."
-
+        docker cp test-runner:/app/test-results ./test-results
+        docker cp test-runner:/app/allure-results ./allure-results
         docker rm test-runner
-
-        # DEBUG: Verify contents on the RUNNER AFTER copying
-        echo "--- Contents of ./test-results on the GitHub Actions runner: ---"
-        ls -la ./test-results || echo "  ./test-results not found or empty on runner."
-        ls -la ./test-results/*/ || echo "  No subdirectories found in ./test-results on runner." # Check for nested results
-        echo "---------------------------------------------------------------------"
 
     - name: Install ReportGenerator
       if: always()
       run: |
         dotnet tool install -g dotnet-reportgenerator-globaltool
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH # Add tools to PATH for subsequent steps
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
     - name: Generate HTML Coverage Report
       if: always()
       run: |
-        # Use the glob pattern from your previous successful run
-        if find test-results -name "coverage.cobertura.xml" -type f | grep -q .; then
-          echo "Generating coverage report from test-results"
+        # Changed to look for 'coverage.xml' directly in 'test-results/'
+        if [ -f "test-results/coverage.xml" ]; then
           reportgenerator \
-            "-reports:test-results/*/coverage.cobertura.xml" \
+            "-reports:test-results/coverage.xml" \ # Corrected filename
             "-targetdir:unified-reports/coverage-report" \
             "-reporttypes:Html;JsonSummary" \
-            "-sourcedirs:./CardValidation.Core;./CardValidation.Web" \ # <--- CRITICAL ADDITION!
+            "-sourcedirs:./CardValidation.Core;./CardValidation.Web" \
             -verbosity:Warning
-          echo "✅ HTML Coverage report generated successfully in unified-reports/coverage-report"
-
-          if [ -f "unified-reports/coverage-report/Summary.json" ]; then
-            echo "📊 Coverage Summary:"
-            cat unified-reports/coverage-report/Summary.json
-          fi
         else
-          echo "⚠️ No coverage files (coverage.cobertura.xml) found in test-results/ subdirectories."
-          echo "Please ensure Coverlet is generating them correctly in the Dockerfile and they are copied."
-          # Create a placeholder HTML file if no coverage is found
           mkdir -p unified-reports/coverage-report
-          echo "<html><body><h1>No Coverage Data Found</h1><p>Coverage data was not generated during test execution, or the expected XML file was not found.</p></body></html>" > unified-reports/coverage-report/index.html
+          echo "<html><body><h1>No Coverage Data Found</h1><p>Coverage data was not generated during test execution, or the expected XML file (coverage.xml) was not found.</p></body></html>" > unified-reports/coverage-report/index.html
         fi
 
     - name: Load Allure Report history (safe)
@@ -122,25 +92,16 @@ jobs:
     - name: Prepare unified reports (for other artifacts)
       if: always()
       run: |
-        # Copy TRX file to unified-reports (unified-reports is already created in a previous step)
         if [ -f "test-results/all-tests.trx" ]; then
-          cp "test-results/all-tests.trx" "unified-reports/" # Copy into the already existing directory
-          echo "Test results (TRX) copied to unified-reports"
-        else
-          echo "TRX file (all-tests.trx) not found in test-results/."
+          cp "test-results/all-tests.trx" "unified-reports/"
         fi
-
-        echo "=== Final Unified Reports Structure ==="
-        ls -la unified-reports/ || echo "Unified reports directory is empty"
-        ls -la unified-reports/coverage-report/ || echo "Unified reports coverage-report directory is empty."
-
 
     - name: Upload unified test reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: other-test-reports
-        path: unified-reports/ # This now uploads the HTML report and TRX
+        path: unified-reports/
         if-no-files-found: warn
 
     - name: Build production image
