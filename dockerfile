@@ -1,6 +1,26 @@
+# --- Stage 1: Build ---
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["CardValidation.Core/CardValidation.Core.csproj", "CardValidation.Core/"]
+COPY ["CardValidation.Web/CardValidation.Web.csproj", "CardValidation.Web/"]
+COPY ["CardValidation.Tests/CardValidation.Tests.csproj", "CardValidation.Tests/"]
+
+# Restore dependencies
+RUN dotnet restore "CardValidation.Web/CardValidation.Web.csproj"
+
+# Copy all source code
+COPY . .
+
+# Build the solution
+RUN dotnet build "CardValidation.Web/CardValidation.Web.csproj" -c Release -o /app/build
+
 # --- Stage 2: Test ---
 FROM build AS test
 WORKDIR /src
+
+# ... (rest of your test stage code)
 
 # Install ReportGenerator tool for coverage reports
 RUN dotnet tool install --global dotnet-reportgenerator-globaltool

@@ -81,7 +81,7 @@ jobs:
           cp -r test-results/CoverageReport unified-reports/coverage-report
           echo "✓ Coverage report copied to unified-reports/coverage-report"
         else
-          echo "❌ Coverage report not found"
+          echo "Coverage report not found"
         fi
         
         # Copy TRX files
@@ -89,7 +89,7 @@ jobs:
           cp test-results/all-tests.trx unified-reports/
           echo "✓ Test results (TRX) copied to unified-reports"
         else
-          echo "❌ TRX file not found"
+          echo "TRX file not found"
         fi
         
         # Copy any coverage XML files for debugging
