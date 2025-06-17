@@ -1,36 +1,42 @@
-# --- Stage 1: Build ---
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-
-COPY CardValidation.sln .
-COPY CardValidation.Core/CardValidation.Core.csproj CardValidation.Core/
-COPY CardValidation.Tests/CardValidation.Tests.csproj CardValidation.Tests/
-COPY CardValidation.Web/CardValidation.Web.csproj CardValidation.Web/
-
-RUN dotnet restore CardValidation.sln
-COPY . .
-RUN dotnet publish CardValidation.Web/CardValidation.Web.csproj -c Release -o /app/publish
-
 # --- Stage 2: Test ---
 FROM build AS test
 WORKDIR /src
 
-# Ensure test-results exists
-RUN mkdir -p /app/test-results /app/allure-results
+# Install ReportGenerator tool for coverage reports
+RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 
+# Ensure directories exist
+RUN mkdir -p /app/test-results /app/allure-results /app/test-results/CoverageReport
+
+# Run tests with inline coverage settings (no runsettings file needed)
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
-     --collect:"XPlat Code Coverage" \
-    "/p:CoverletInclude=CardValidation.Core*,CardValidation.Web*" || true
+    --collect:"XPlat Code Coverage" \
+    /p:CollectCoverage=true \
+    /p:CoverletOutputFormat=opencover \
+    /p:CoverletOutput=/app/test-results/coverage.opencover.xml \
+    /p:Include="[CardValidation.Core]*,[CardValidation.Web]*" \
+    /p:Exclude="[*.Tests]*" || true
 
-RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
-      cp -r CardValidation.Tests/allure-results/* /app/allure-results/; \
+# Generate HTML coverage report
+RUN /root/.dotnet/tools/reportgenerator \
+    -reports:"/app/test-results/coverage.opencover.xml" \
+    -targetdir:"/app/test-results/CoverageReport" \
+    -reporttypes:"Html;Badges" || echo "Coverage report generation failed"
+
+# Copy Allure results if they exist
+RUN if [ -d "/src/CardValidation.Tests/bin/Release/net8.0/allure-results" ]; then \
+      cp -r /src/CardValidation.Tests/bin/Release/net8.0/allure-results/* /app/allure-results/ 2>/dev/null || true; \
     fi
 
-# --- Stage 3: Final Runtime ---
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
-WORKDIR /app
-COPY --from=build /app/publish .
-EXPOSE 8080
-ENTRYPOINT ["dotnet", "CardValidation.Web.dll"]
+# Also check for allure-results in test project root
+RUN if [ -d "/src/CardValidation.Tests/allure-results" ]; then \
+      cp -r /src/CardValidation.Tests/allure-results/* /app/allure-results/ 2>/dev/null || true; \
+    fi
+
+# List contents for debugging
+RUN echo "=== Test Results Structure ===" && \
+    find /app/test-results -type f 2>/dev/null || echo "No test results found" && \
+    echo "=== Allure Results Structure ===" && \
+    find /app/allure-results -type f 2>/dev/null || echo "No allure results found"
