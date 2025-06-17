@@ -32,14 +32,14 @@ FROM build AS test
 # Set the working directory for this test stage.
 WORKDIR /src
 
-# Run tests, collect coverage.
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
     /p:CollectCoverage=true \
     /p:CoverletOutputFormat=cobertura \
     /p:CoverletOutput=/app/test-results/coverage.xml \
-    /p:CoverletVerbosity=detailed || true
+    /p:CoverletVerbosity=detailed \
+    /p:CoverletInclude="[CardValidation.Core]*,[CardValidation.Web]*" || true # Explicitly include these assemblies for coverage.
 
 # Copy Allure results.
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
@@ -62,4 +62,3 @@ EXPOSE 8080
 
 # Define application entrypoint.
 ENTRYPOINT ["dotnet", "CardValidation.Web.dll"]
-
