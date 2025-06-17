@@ -38,6 +38,11 @@ jobs:
         docker cp test-runner:/app/allure-results ./allure-results
         docker rm test-runner
 
+    - name: Normalize coverage.xml location
+      run: |
+        mkdir -p test-results
+        find test-results -name 'coverage.cobertura.xml' -exec cp {} test-results/coverage.xml \;
+
     - name: Install ReportGenerator
       if: always()
       run: |

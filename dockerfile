@@ -21,10 +21,7 @@ RUN mkdir -p /app/test-results /app/allure-results
 RUN dotnet test CardValidation.Tests/CardValidation.Tests.csproj \
     --logger "trx;LogFileName=all-tests.trx" \
     --results-directory /app/test-results \
-    /p:CollectCoverage=true \
-    /p:CoverletOutputFormat=cobertura \
-    /p:CoverletOutput=/app/test-results/coverage.xml \
-    /p:CoverletVerbosity=detailed \
+     --collect:"XPlat Code Coverage" \
     "/p:CoverletInclude=CardValidation.Core*,CardValidation.Web*" || true
 
 RUN if [ -d "CardValidation.Tests/allure-results" ]; then \
