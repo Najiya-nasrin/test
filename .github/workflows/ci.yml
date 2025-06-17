@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -6,122 +6,114 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  DOCKER_IMAGE_NAME: card-validation-app
-  ALLURE_HISTORY_PATH: allure-history
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Build and Test
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build test image (runs tests in Dockerfile)
-      run: |
-        docker build --target test -t card-validation-tests .
-
-    - name: Extract test results from test container image
-      run: |
-        docker create --name test-runner card-validation-tests
-        docker cp test-runner:/app/test-results ./test-results || echo "No test-results found"
-        docker cp test-runner:/app/allure-results ./allure-results || echo "No allure-results found"
-        docker rm test-runner
-
-    # Debug: List extracted contents
-    - name: Debug - List extracted contents
-      if: always()
-      run: |
-        echo "=== Test Results Contents ==="
-        find test-results -type f 2>/dev/null || echo "No test-results directory"
-        echo "=== Allure Results Contents ==="
-        find allure-results -type f 2>/dev/null || echo "No allure-results directory"
-
-    - name: Load Allure Report history (safe)
-      if: always()
-      run: |
-        git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages || echo "No gh-pages branch yet"
-        rm -rf gh-pages/.git
-
-    - name: Build Allure Report
-      uses: simple-elf/allure-report-action@v1.7
-      if: always() && hashFiles('allure-results/**') != ''
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        gh_pages: gh-pages
-        allure_history: ${{ env.ALLURE_HISTORY_PATH }}
-        allure_results: allure-results
-
-    - name: Publish Allure Report
-      uses: peaceiris/actions-gh-pages@v3
-      if: always() && hashFiles('allure-history/**') != ''
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages
-        publish_dir: ${{ env.ALLURE_HISTORY_PATH }}
-
-    - name: Upload Allure Report Artifact
-      if: always() && hashFiles('allure-history/**') != ''
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: ${{ env.ALLURE_HISTORY_PATH }}
-
-    - name: Prepare unified reports
-      if: always()
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore CardValidation.sln
+    
+    - name: Build solution
+      run: dotnet build CardValidation.sln --configuration Release --no-restore
+    
+    - name: Clean previous test results
       run: |
-        mkdir -p unified-reports
-        
-        # Copy coverage report if it exists
-        if [ -d "test-results/CoverageReport" ]; then
-          cp -r test-results/CoverageReport unified-reports/coverage-report
-          echo "✓ Coverage report copied to unified-reports/coverage-report"
+        rm -rf CardValidation.Tests/allure-results
+        rm -rf TestResults/allure-report
+        echo "✅ Cleaned previous Allure results and reports"
+    
+    - name: Run tests
+      run: |
+        dotnet test CardValidation.sln \
+          --configuration Release \
+          --no-build \
+          --verbosity normal \
+          --logger trx \
+          --results-directory TestResults \
+          --collect:"XPlat Code Coverage"
+      env:
+        ASPNETCORE_ENVIRONMENT: Testing
+    
+    - name: Install Allure CLI
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq openjdk-11-jre-headless
+        wget -q -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+        tar -xzf allure.tgz
+        sudo mv allure-2.24.0 /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+        allure --version
+    
+    - name: Generate Allure report
+      run: |
+        cd CardValidation.Tests
+        if [ -d "allure-results" ] && [ "$(find allure-results -name "*.json" | wc -l)" -gt 0 ]; then
+          allure generate allure-results --clean -o ../TestResults/allure-report --single-file
+          echo "✅ Allure report generated successfully"
         else
-          echo "Coverage report not found"
+          echo "⚠️ No Allure results found - skipping report generation"
+          mkdir -p ../TestResults/allure-report
+          echo "<h1>No Allure Results Found</h1><p>Tests ran but no Allure data was generated.</p>" > ../TestResults/allure-report/index.html
         fi
-        
-        # Copy TRX files
-        if [ -f "test-results/all-tests.trx" ]; then
-          cp test-results/all-tests.trx unified-reports/
-          echo "✓ Test results (TRX) copied to unified-reports"
-        else
-          echo "TRX file not found"
-        fi
-        
-        # Copy any coverage XML files for debugging
-        find test-results -name "*.xml" -exec cp {} unified-reports/ \; 2>/dev/null || true
-        
-        echo "=== Final Unified Reports Structure ==="
-        find unified-reports -type f 2>/dev/null || echo "Unified reports directory is empty"
-
-    - name: Upload unified test reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: other-test-reports
-        path: unified-reports/
-        if-no-files-found: warn
-
-    - name: Build production image
-      if: success()
+    
+    - name: Generate coverage report
       run: |
-        docker build --target final -t ${{ env.DOCKER_IMAGE_NAME }} .
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        
+        if find TestResults -name "coverage.cobertura.xml" -type f | grep -q .; then
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"TestResults/coverage-report" \
+            -reporttypes:"Html;JsonSummary" \
+            -verbosity:Warning
+          echo "✅ Coverage report generated successfully"
+          
+          if [ -f "TestResults/coverage-report/Summary.json" ]; then
+            echo "📊 Coverage Summary:"
+            cat TestResults/coverage-report/Summary.json
+          fi
+        else
+          echo "⚠️ No coverage files found"
+        fi
+    
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-and-reports
+        path: |
+          TestResults/allure-report/
+          TestResults/coverage-report/
+        retention-days: 30
+    
 
+
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Only build Docker on push, not PR
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
     - name: Login to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Push to Docker Hub
-      if: success() && github.ref == 'refs/heads/main'
+    
+    - name: Build and push Docker image
       run: |
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+        docker build --target runtime -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest -t ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }} .
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/cardvalidation-app:${{ github.sha }}
